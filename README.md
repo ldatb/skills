@@ -1,4 +1,4 @@
-# skills
+# Agent Skills
 
 **Deterministic Claude skills, built to a manufacturing standard.**
 
@@ -7,14 +7,14 @@
 
 A skill exists to wring **determinism** out of a stochastic system: the agent takes
 the *same process* every run. This repository treats that as an engineering problem,
-not a prompting one — and solves it the way a factory solves defects, by building
+not a prompting one, and solves it the way a factory solves defects, by building
 quality in rather than inspecting it afterward.
 
 ## The thesis
 
 An agent follows a process written in human language, and human language is full of
 ambiguity. "Clean up the old files and make sure there are no collisions" can mean
-three different things — including *delete everything first*. The agent's quality does
+three different things, including *delete everything first*. The agent's quality does
 not fix this; the **language** is the problem.
 
 So we move work out of the model and into deterministic tools:
@@ -75,7 +75,7 @@ skill-lint --strict skills/      # the gate; runs in pre-commit and CI
 Skills call these instead of describing file operations in prose:
 
 | Primitive | Guarantee |
-|-----------|-----------|
+| --------- | --------- |
 | `unique_path` | Collision-free name, atomic `O_CREAT\|O_EXCL`, safe under concurrency |
 | `atomic_write` | A reader never sees a half-written file |
 | `safe_remove` | Refuses anything outside its root, refuses the root, never recurses |
@@ -91,7 +91,7 @@ skill cannot be created by hand (**Poka-yoke** at authoring time).
 
 ## Repository layout
 
-```
+```bash
 skills/                 # the skills, by domain
   meta/                 # the foundation + how to author skills
     foundation/         # the determinism doctrine every skill inherits
@@ -110,7 +110,7 @@ tools/                  # the deterministic toolchain (Python)
 Skills are filed by domain. The taxonomy grows as skills land — no empty folders.
 
 | Domain | What lives here |
-|--------|-----------------|
+| ------ | --------------- |
 | `meta` | The foundation and skill-authoring skills |
 | `engineering` | Secure SDLC, TDD, linting/SCA gates, code review |
 | `obsidian` | Script-driven second-brain / vault operations |
@@ -133,17 +133,6 @@ violation is a red build, not a warning):
 - `pytest` — the toolchain test suite
 - `ruff` — Python lint/format
 - `semgrep` — static analysis (SCA) on the toolchain
-
-## Status
-
-Early and honest: the foundation and toolchain are complete and tested; domain skills
-are being built starting with **engineering / secure SDLC**. Distribution via a plugin
-marketplace is on the roadmap.
-
-## Author
-
-Built by [Lucas de Ataides](https://github.com/ldatb). Security, deterministic agents,
-and the conviction that "it mostly works" is not done (**Shokunin**).
 
 ## License
 

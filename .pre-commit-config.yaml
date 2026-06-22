@@ -11,6 +11,13 @@ repos:
         pass_filenames: false
         always_run: true
 
+      - id: skill-docs
+        name: skill-docs (markdown links resolve)
+        entry: python tools/run_docs.py .
+        language: python
+        pass_filenames: false
+        always_run: true
+
       - id: toolchain-tests
         name: toolchain tests
         entry: python -m pytest tools -q

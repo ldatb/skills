@@ -13,7 +13,7 @@ venv/
 .coverage
 htmlcov/
 
-# Node (skills.sh tooling, if used)
+# Node (skills.sh tooling)
 node_modules/
 
 # Semgrep

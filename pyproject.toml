@@ -19,10 +19,12 @@ dev = ["pytest>=8.0", "ruff>=0.6", "semgrep>=1.80"]
 skill-lint = "skill_lint.cli:main"
 skill-new = "skill_new.cli:main"
 skill-gate = "skill_gate.cli:main"
+skill-changelog = "skill_changelog.cli:main"
+skill-docs = "skill_docs.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["tools"]
-include = ["skill_lint*", "skill_new*", "skill_gate*", "skillkit*"]
+include = ["skill_lint*", "skill_new*", "skill_gate*", "skill_changelog*", "skill_docs*", "skillkit*"]
 
 [tool.setuptools.package-data]
 skill_lint = ["rules.yaml"]

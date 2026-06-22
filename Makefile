@@ -30,6 +30,10 @@ lint: ## Run skill-lint (strict) on every skill. Blocks on any violation.
 lint-fix: ## Apply skill-lint's deterministic autofixes (frontmatter normalization).
 	$(BIN)/skill-lint --fix skills/
 
+.PHONY: docs
+docs: ## Check that every Markdown link and file reference resolves.
+	$(BIN)/skill-docs .
+
 .PHONY: test
 test: ## Run the toolchain test suite.
 	$(BIN)/pytest
@@ -48,5 +52,5 @@ new-skill: ## Scaffold a conformant skill. Usage: make new-skill CATEGORY=engine
 	$(BIN)/skill-new --category "$(CATEGORY)" --name "$(NAME)"
 
 .PHONY: ci
-ci: lint test sca ## Everything CI runs, locally. Green here == green there.
+ci: lint docs test sca ## Everything CI runs, locally. Green here == green there.
 	$(BIN)/ruff check tools/

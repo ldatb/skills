@@ -1,15 +1,20 @@
 {
   "name": "ldatb-skills",
   "skills": [
+    "./skills/engineering/app-completion-loop",
     "./skills/engineering/backend",
+    "./skills/engineering/changelog-gen",
     "./skills/engineering/code-review",
     "./skills/engineering/devops",
+    "./skills/engineering/docs-sync",
     "./skills/engineering/frontend",
     "./skills/engineering/qa",
     "./skills/engineering/secure-sdlc",
     "./skills/engineering/supply-chain-audit",
     "./skills/engineering/tdd",
     "./skills/meta/creating-skills",
-    "./skills/meta/foundation"
+    "./skills/meta/foundation",
+    "./skills/productivity/grill-me",
+    "./skills/productivity/ponytail"
   ]
 }

@@ -24,6 +24,9 @@ jobs:
       - name: skill-lint (strict) — the determinism gate
         run: skill-lint --strict skills/
 
+      - name: skill-docs — Markdown links resolve
+        run: skill-docs .
+
       - name: Toolchain tests
         run: pytest -q
 
