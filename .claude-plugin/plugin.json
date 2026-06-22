@@ -1,0 +1,7 @@
+{
+  "name": "ldatb-skills",
+  "skills": [
+    "./skills/meta/creating-skills",
+    "./skills/meta/foundation"
+  ]
+}

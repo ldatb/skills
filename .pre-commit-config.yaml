@@ -1,0 +1,36 @@
+# Block everywhere: the determinism gate fails the commit, not just CI (Jidoka).
+# Run `make install` once to register these hooks.
+repos:
+  - repo: local
+    hooks:
+      - id: skill-lint
+        name: skill-lint (determinism, strict)
+        entry: python tools/run_lint.py --strict skills
+        language: python
+        additional_dependencies: ["PyYAML>=6.0"]
+        pass_filenames: false
+        always_run: true
+
+      - id: toolchain-tests
+        name: toolchain tests
+        entry: python -m pytest tools -q
+        language: python
+        additional_dependencies: ["PyYAML>=6.0", "pytest>=8.0"]
+        pass_filenames: false
+        files: ^tools/.*\.py$
+
+      - id: ruff
+        name: ruff (lint tooling)
+        entry: ruff check --fix tools
+        language: python
+        additional_dependencies: ["ruff>=0.6"]
+        pass_filenames: false
+        files: ^tools/.*\.py$
+
+      - id: ruff-format
+        name: ruff format (tooling)
+        entry: ruff format tools
+        language: python
+        additional_dependencies: ["ruff>=0.6"]
+        pass_filenames: false
+        files: ^tools/.*\.py$

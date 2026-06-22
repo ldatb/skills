@@ -1,0 +1,29 @@
+# Repo-specific Semgrep rules for the Python toolchain. Offline, deterministic.
+# CI additionally runs the p/python and p/secrets registry packs.
+rules:
+  - id: no-shell-true
+    languages: [python]
+    severity: ERROR
+    message: "subprocess with shell=True is a command-injection risk; pass an argument list with shell=False."
+    patterns:
+      - pattern: subprocess.$F(..., shell=True, ...)
+
+  - id: no-os-system
+    languages: [python]
+    severity: ERROR
+    message: "os.system runs through the shell; use subprocess with an argument list."
+    pattern: os.system(...)
+
+  - id: no-eval-exec
+    languages: [python]
+    severity: ERROR
+    message: "eval/exec enables code execution from data; remove it."
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: exec(...)
+
+  - id: yaml-safe-load-only
+    languages: [python]
+    severity: ERROR
+    message: "yaml.load can construct arbitrary objects; use yaml.safe_load."
+    pattern: yaml.load(...)

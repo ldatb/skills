@@ -1,0 +1,212 @@
+# skill-lint rules — the single source of truth for determinism enforcement.
+#
+# Each new ambiguity we discover becomes a rule + a test fixture here (Kaizen).
+# Logic lives in tools/skill_lint/checks/; this file holds only data: patterns,
+# thresholds, messages, severities. Suppress a rule on a line with
+#   <!-- skill-lint: allow SK040 -->
+# or across a region with disable/enable directives.
+version: 1
+
+settings:
+  allowed_frontmatter_keys: [name, description, disable-model-invocation, license, allowed-tools, metadata]
+  required_frontmatter_keys: [name, description]
+  max_description_chars: 500
+  max_skill_lines: 500            # body length before it counts as sprawl
+  max_conditionals_per_sentence: 1  # more than this in one sentence == branching to split out
+  trigger_phrases: ["use when", "use this when", "when the user", "when you", "invoke when", "for when"]
+  # Sentence-initial pronoun followed by one of these verbs reads as an unanchored reference.
+  ambiguous_pronouns: [it, this, that, these, those, they, them]
+  pronoun_verbs:
+    - is
+    - are
+    - was
+    - were
+    - will
+    - would
+    - should
+    - shall
+    - can
+    - could
+    - may
+    - might
+    - must
+    - does
+    - do
+    - has
+    - have
+    - causes
+    - cause
+    - makes
+    - make
+    - means
+    - allows
+    - ensures
+    - lets
+    - gives
+    - returns
+    - creates
+    - removes
+    - applies
+    - happens
+    - works
+    - fails
+    - runs
+    - tells
+    - keeps
+    - becomes
+
+rules:
+  # --- frontmatter (SK00x) -------------------------------------------------
+  - id: SK001
+    name: frontmatter-missing
+    category: frontmatter
+    severity: error
+    message: "SKILL.md must open with a YAML frontmatter block delimited by '---'."
+
+  - id: SK002
+    name: frontmatter-name-missing
+    category: frontmatter
+    severity: error
+    message: "Frontmatter is missing the required 'name' key."
+
+  - id: SK003
+    name: frontmatter-name-mismatch
+    category: frontmatter
+    severity: error
+    message: "Frontmatter 'name' must equal the skill's folder name."
+
+  - id: SK004
+    name: frontmatter-name-not-kebab
+    category: frontmatter
+    severity: error
+    message: "Skill 'name' must be kebab-case (lowercase letters, digits, hyphens)."
+
+  - id: SK005
+    name: frontmatter-description-missing
+    category: frontmatter
+    severity: error
+    message: "Frontmatter is missing the required 'description' key."
+
+  - id: SK006
+    name: description-too-long
+    category: frontmatter
+    severity: warning
+    message: "Description exceeds the budget; every word is permanent context load."
+
+  - id: SK007
+    name: model-invoked-without-trigger
+    category: frontmatter
+    severity: warning
+    message: "Model-invoked skill: description has no trigger phrasing (e.g. 'Use when…'), so it will fire unreliably."
+    hint: "Add explicit triggers, or set disable-model-invocation: true to make it user-invoked."
+
+  - id: SK008
+    name: frontmatter-unknown-key
+    category: frontmatter
+    severity: warning
+    message: "Unrecognized frontmatter key."
+
+  # --- ambiguity (SK01x–SK06x) --------------------------------------------
+  - id: SK010
+    name: pronoun-ambiguity
+    category: pronouns
+    severity: warning
+    message: "Unanchored pronoun at sentence start — name the referent instead."
+    hint: "Replace the pronoun with the noun it stands for."
+
+  - id: SK020
+    name: context-explosion
+    category: quantifiers
+    severity: warning
+    message: "Unbounded quantifier — 'for each / all / every / any' can explode context on a large project."
+    hint: "Bound the scope: name the exact set, or pass it to a script that enumerates deterministically."
+    patterns:
+      - '\bfor\s+(each|every|all)\b'
+      - '\b(all|every)\s+(file|files|item|items|line|lines|record|records|directory|directories|entry|entries|test|tests)\b'
+      - '\bfor\s+any\b'
+      - '\bany\s+instance\b'
+      - '\bfind\s+any\b'
+
+  - id: SK030
+    name: conditional-complexity
+    category: conditionals
+    severity: warning
+    message: "Multiple conditionals in one sentence — branching the agent may not follow reliably."
+    hint: "Split each branch into its own step, or move the decision into a script."
+    keywords: ['\bif\b', '\bwhen\b', '\bunless\b', '\botherwise\b', '\bin case\b', '\beither\b']
+
+  - id: SK040
+    name: destructive-operation
+    category: destructive
+    severity: error
+    scan_code: true
+    message: "Inlined destructive command — call a guarded helper (skillkit.safe_remove) instead."
+    hint: "Determinism means the dangerous path is impossible, not merely discouraged."
+    patterns:
+      - '\brm\s+-[a-zA-Z]*[rf]'
+      - '\brm\s+--recursive'
+      - '\brmdir\s+-'
+      - '\bgit\s+clean\s+-[a-zA-Z]*f'
+      - '\bgit\s+reset\s+--hard'
+      - '\bgit\s+checkout\s+--\s'
+      - '(?i)\bDROP\s+(TABLE|DATABASE)\b'
+      - '(?i)\bTRUNCATE\s+TABLE\b'
+      - '\bmkfs\b'
+      - '\bdd\s+if='
+      - '\bchmod\s+-R\b'
+      - '\bchown\s+-R\b'
+
+  - id: SK041
+    name: vague-destructive
+    category: destructive
+    severity: warning
+    message: "Vague destructive verb — 'make sure', 'clean up', 'reset', 'wipe' have a dangerously broad reading."
+    hint: "State exactly what is removed and what is kept, then delegate to a guarded helper."
+    patterns:
+      - '(?i)\bclean\s+up\b'
+      - '(?i)\bwipe\b'
+      - '(?i)\bnuke\b'
+      - '(?i)\bblow\s+away\b'
+      - '(?i)\bstart\s+(from\s+)?(scratch|fresh)\b'
+
+  - id: SK050
+    name: concurrency-hazard
+    category: concurrency
+    severity: warning
+    message: "File created with a non-unique / time-based name — concurrent runs can collide."
+    hint: "Use skillkit.unique_path: the kernel guarantees uniqueness, the agent does not."
+    patterns:
+      - '(?i)\b(create|write|save|generate)\b[^.\n]*\b(file|note)\b[^.\n]*\b(timestamp|time|date|now|nanosecond)\b'
+      - '(?i)\bno\s+collisions?\b'
+
+  - id: SK060
+    name: vague-imperative
+    category: vague
+    severity: warning
+    message: "Vague imperative — the completion criterion is not checkable."
+    hint: "Replace with an observable condition the agent can verify."
+    patterns:
+      - '(?i)\bmake\s+sure\b'
+      - '(?i)\bas\s+needed\b'
+      - '(?i)\bas\s+appropriate\b'
+      - '(?i)\bhandle\s+(it|them|appropriately|accordingly)\b'
+      - '(?i)\bif\s+necessary\b'
+      - '(?i)\betc\.'
+      - '(?i)\band\s+so\s+on\b'
+
+  # --- hygiene (SK07x–SK08x) ----------------------------------------------
+  - id: SK070
+    name: skill-too-long
+    category: structure
+    severity: warning
+    message: "SKILL.md is long enough to risk sprawl — disclose reference material to linked files."
+
+  - id: SK080
+    name: unresolved-marker
+    category: structure
+    severity: error
+    scan_code: true
+    message: "Unresolved authoring marker left in a published skill."
+    patterns:
+      - '\b(TODO|FIXME|XXX|HACK)\b'
+      - '\?\?\?'
