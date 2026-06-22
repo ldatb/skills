@@ -42,16 +42,12 @@ Legend: `[x]` done & lint-green · `[~]` in progress · `[ ]` todo · `[!]` bloc
 ## Wave 6 — agent-infra ports ✅ (ralph-vault → wave 7)
 - [x] ralph (autonomous loop) · [x] autoguardrails (POLICY.md + scripts/check-policy.sh, no LLM, --selftest)
 
-## Wave 7 — second brain / obsidian (obsidian/) — major, script-backed
-- [ ] obsidian-vault (the full compiler spec: orientation, connector gate, _tools scripts, validation gates)
-- [ ] second-brain-crud (fast CRUD + correlation into the vault)
-- [ ] project-management · [ ] client-satisfaction · [ ] employee-management (feed the vault)
+## Wave 7 — second brain / obsidian + management ✅
+- [x] obsidian/: obsidian-vault (compiler + 6 _tools validator scripts) · second-brain-crud (vault.sh CRUD) · ralph-vault
+- [x] management/: project-management · client-satisfaction · employee-management
 
-## Wave 8 — social (social/)
-- [ ] social-media-viral (IG + X viral research via Chrome; logged-in accounts)
-
-## Wave 9 — impeccable polish pass
-- [ ] polish · [ ] overdrive (if not done in Wave 2)
+## Wave 8 — social ✅
+- [x] social/: social-media-viral (IG + X viral research via Chrome; research+draft only, posting gated)
 
 ## Final — stress test ALL skills to a Japanese quality bar; fix; repeat until clean
 - [ ] adversarial stress-test pass (one critic agent per skill) → fix → re-verify

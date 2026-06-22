@@ -1,0 +1,26 @@
+---
+name: ralph-vault
+description: Apply the autonomous Ralph loop to an Obsidian vault — re-read vault state, ingest one source, canonicalize entities, run the validators, repeat unattended until the source backlog is empty and the vault hard-gates pass. Use when the user wants to "ralph the vault", burn down a large source backlog into canonical notes unattended, batch-ingest an inbox, or maintain a vault until validation is green. For sensitive sources or per-source review, use checkpointed obsidian-vault ingestion instead.
+---
+
+Apply the autonomous Ralph loop to building and maintaining an Obsidian second-brain vault: one stable prompt re-reads the vault's loop state, processes one source into canonical notes, proves the result with the vault validators, writes the new state back, and repeats with no human between iterations. The loop runs unattended until the source backlog is empty *and* the vault's validation hard-gates pass. The danger is a runaway that over-ingests, duplicates entities, drifts, or leaks private data — so the loop is bounded before the first iteration runs and the vault's hard checkpoints still hold.
+
+Ralph-vault delegates every vault operation to [obsidian-vault](../obsidian-vault/SKILL.md) and its scripts; this skill owns only the loop, the stop-condition, and the guardrails. The autonomous loop fits a large, mechanical source backlog. Checkpointed manual ingestion is safer for sensitive sources — see when each fits in [the ralph-vault loop](references/ralph-vault-loop.md) and the base autonomous technique in [ralph](../../engineering/ralph/SKILL.md).
+
+## Steps
+
+1. **Write the done-condition and the guardrails first.** Record the backlog as the enumerated set of unprocessed sources and entities, name the vault hard-gates that must end green (validator critical count zero, broken-link count zero, unresolved-contradiction count zero), then set the bounds: an iteration cap N, a cost/time budget, a stall limit K, and the named validator command from obsidian-vault. The step ends once the backlog, the hard-gate list, N, the budget, K, and the validator command all sit in writing before any iteration runs — see [the ralph-vault loop](references/ralph-vault-loop.md) for sizing the bounds.
+
+2. **Seed the resumable loop state.** Write the backlog and the loop counters into the vault's durable state — a `state.json` holding the open sources, the processed sources, the iteration count, the spend, and the consecutive-stall count, paired with the append-only `INGESTION-LOG.md`. The step ends once a cold reader could reconstruct the entire loop position from `state.json` and `INGESTION-LOG.md` alone.
+
+3. **Open the iteration by re-reading state.** Begin every iteration by reading `state.json` and `INGESTION-LOG.md` fresh, never from memory of the previous pass, then check the four halt conditions before any vault write. The step ends once the loop has loaded the current open set and confirmed the cap, the budget, the stall limit, and the last-recorded validator-green precondition all still permit another iteration.
+
+4. **Process exactly one source under the safety rules.** Select the top open source and delegate its ingestion to obsidian-vault — extract entities, canonicalize against existing notes to avoid duplicates, rewrite stale claims, reconcile contradictions — taking no destructive operation and no external connector write without recorded approval. The step ends once one source's notes exist, no banned operation ran, and no connector wrote remote state without sign-off — see the safety rules in [the ralph-vault loop](references/ralph-vault-loop.md).
+
+5. **Run the validators, then write the result back to state.** Run the named vault validator; a red gate reverts the source to open and increments the stall count, and a green gate moves the source to processed and resets the stall count to zero. The step ends once the validator result is recorded verbatim in `INGESTION-LOG.md` and `state.json` reflects the new open set, the counts, and the spend.
+
+6. **Verify the connector gate before any external write.** Hold every connector or research-command write to the vault behind recorded approval, so research output enters only when a human has signed off in advance. The step ends once the iteration's connector writes are either zero or each tied to a prior approval logged in `INGESTION-LOG.md`.
+
+7. **Halt or loop on the checkable conditions.** Stop when the open set is empty with the vault hard-gates green (success), or when the iteration cap, the budget, or the stall limit K trips (guardrail halt); otherwise return to step 3. The loop is finished once one stop condition holds and a final state with its termination reason is written to `state.json`.
+
+See also [the ralph-vault loop](references/ralph-vault-loop.md) for the loop-to-compiler mapping, every guardrail, the state contract, when ralph-vault fits versus checkpointed ingestion, the failure modes, the red flags, and a worked two-iteration example; [obsidian-vault](../obsidian-vault/SKILL.md) for the vault operations and scripts this loop delegates to; and [ralph](../../engineering/ralph/SKILL.md) for the base autonomous-loop technique.

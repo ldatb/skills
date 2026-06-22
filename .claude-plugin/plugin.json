@@ -29,6 +29,9 @@
     "./skills/engineering/supply-chain-audit",
     "./skills/engineering/tdd",
     "./skills/engineering/to-issues",
+    "./skills/management/client-satisfaction",
+    "./skills/management/employee-management",
+    "./skills/management/project-management",
     "./skills/marketing/ad-creative",
     "./skills/marketing/churn-prevention",
     "./skills/marketing/cold-email",
@@ -45,6 +48,9 @@
     "./skills/meta/creating-skills",
     "./skills/meta/foundation",
     "./skills/meta/setup",
+    "./skills/obsidian/obsidian-vault",
+    "./skills/obsidian/ralph-vault",
+    "./skills/obsidian/second-brain-crud",
     "./skills/productivity/caveman",
     "./skills/productivity/caveman-review",
     "./skills/productivity/grill-me",
@@ -55,6 +61,7 @@
     "./skills/quality/full-output-enforcement",
     "./skills/quality/overdrive",
     "./skills/quality/polish",
-    "./skills/quality/verification-before-completion"
+    "./skills/quality/verification-before-completion",
+    "./skills/social/social-media-viral"
   ]
 }
