@@ -18,10 +18,10 @@ Legend: `[x]` done & lint-green · `[~]` in progress · `[ ]` todo · `[!]` bloc
 - [x] productivity: caveman, caveman-review
 - [x] meta: cavecrew (rule: every non-user-facing subagent follows it)
 
-## Wave 1 — marketing cluster (coreyhaines31 ports → marketing/)
-- [ ] copywriting · [ ] copy-editing · [ ] ad-creative · [ ] cold-email
-- [ ] social-content · [ ] sales-enablement · [ ] churn-prevention
-- [ ] site-architecture · [ ] marketing-psychology · [ ] marketing-ideas · [ ] revops
+## Wave 1 — marketing cluster (coreyhaines31 ports → marketing/) ✅
+- [x] copywriting · [x] copy-editing · [x] ad-creative · [x] cold-email
+- [x] social-content · [x] sales-enablement · [x] churn-prevention
+- [x] site-architecture · [x] marketing-psychology · [x] marketing-ideas · [x] revops
 
 ## Wave 2 — design/taste cluster (design/)
 - [ ] web-design-guidelines · [ ] ui-ux-pro-max · [ ] design-taste-frontend
