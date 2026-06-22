@@ -1,6 +1,12 @@
 {
   "name": "ldatb-skills",
   "skills": [
+    "./skills/design/brandkit",
+    "./skills/design/design-taste-frontend",
+    "./skills/design/gpt-taste",
+    "./skills/design/industrial-brutalist-ui",
+    "./skills/design/ui-ux-pro-max",
+    "./skills/design/web-design-guidelines",
     "./skills/engineering/app-completion-loop",
     "./skills/engineering/changelog-gen",
     "./skills/engineering/code-review",
@@ -28,6 +34,9 @@
     "./skills/productivity/caveman",
     "./skills/productivity/caveman-review",
     "./skills/productivity/grill-me",
-    "./skills/productivity/least-code"
+    "./skills/productivity/least-code",
+    "./skills/quality/full-output-enforcement",
+    "./skills/quality/overdrive",
+    "./skills/quality/polish"
   ]
 }

@@ -23,10 +23,9 @@ Legend: `[x]` done & lint-green · `[~]` in progress · `[ ]` todo · `[!]` bloc
 - [x] social-content · [x] sales-enablement · [x] churn-prevention
 - [x] site-architecture · [x] marketing-psychology · [x] marketing-ideas · [x] revops
 
-## Wave 2 — design/taste cluster (design/)
-- [ ] web-design-guidelines · [ ] ui-ux-pro-max · [ ] design-taste-frontend
-- [ ] gpt-taste · [ ] brandkit · [ ] full-output-enforcement
-- [ ] industrial-brutalist-ui · [ ] polish · [ ] overdrive
+## Wave 2 — design + quality cluster ✅
+- [x] design/: web-design-guidelines · ui-ux-pro-max · design-taste-frontend · gpt-taste · brandkit · industrial-brutalist-ui
+- [x] quality/: polish · overdrive · full-output-enforcement
 
 ## Wave 3 — process/writing cluster
 - [ ] subagent-driven-development · [ ] verification-before-completion
