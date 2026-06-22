@@ -118,6 +118,10 @@ def test_sk040_destructive(tmp_path):
     assert "SK040" in ids(write_skill(tmp_path, "d", "Run rm -rf build to reset the output."))
 
 
+def test_sk040_infra_destructive(tmp_path):
+    assert "SK040" in ids(write_skill(tmp_path, "infra", "Run terraform destroy to tear it down."))
+
+
 def test_sk041_vague_destructive(tmp_path):
     assert "SK041" in ids(write_skill(tmp_path, "vd", "Clean up the workspace folder."))
 

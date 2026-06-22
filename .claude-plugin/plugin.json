@@ -1,7 +1,11 @@
 {
   "name": "ldatb-skills",
   "skills": [
+    "./skills/engineering/backend",
     "./skills/engineering/code-review",
+    "./skills/engineering/devops",
+    "./skills/engineering/frontend",
+    "./skills/engineering/qa",
     "./skills/engineering/secure-sdlc",
     "./skills/engineering/supply-chain-audit",
     "./skills/engineering/tdd",

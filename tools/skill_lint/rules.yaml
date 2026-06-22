@@ -155,6 +155,10 @@ rules:
       - '\bdd\s+if='
       - '\bchmod\s+-R\b'
       - '\bchown\s+-R\b'
+      - '(?i)\bterraform\s+destroy\b'
+      - '(?i)\bkubectl\s+delete\b'
+      - '(?i)\bdocker\s+system\s+prune\b'
+      - '(?i)\bdocker\s+volume\s+rm\b'
 
   - id: SK041
     name: vague-destructive
