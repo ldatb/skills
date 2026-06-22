@@ -31,19 +31,34 @@ This is **Poka-yoke** (mistake-proofing) and **Jidoka** (stop the line on a defe
 applied to agent skills. The full doctrine lives in
 [`skills/meta/foundation`](skills/meta/foundation/SKILL.md).
 
-## Quickstart
+## Install
+
+Tell any Claude Code agent with this repo available: **"install ldatb skills"** — the
+[`setup`](skills/meta/setup/SKILL.md) skill runs the install. Or do it by hand (requires
+[uv](https://docs.astral.sh/uv/)):
 
 ```bash
-git clone https://github.com/ldatb/skills.git
-cd skills
-make install        # venv + toolchain + pre-commit hooks
+# 1. the CLIs the skills call (skill-lint, skill-gate, skill-changelog, skill-docs, skill-update)
+git clone https://github.com/ldatb/skills.git && cd skills
+./scripts/install.sh                       # uv tool install from the clone; re-run to update
+
+# 2. the skills, as a Claude Code plugin
+/plugin marketplace add ldatb/skills
+/plugin install ldatb-skills@ldatb-skills
+```
+
+`skill-update` reports when a newer tagged release exists.
+
+## Develop
+
+```bash
+make install        # uv sync + pre-commit hooks
 make lint           # skill-lint --strict over every skill
+make docs           # skill-docs — every Markdown link resolves
 make test           # the toolchain's own test suite
 ```
 
-Skills are standard `SKILL.md` files under `skills/`, organized by domain. The
-`.claude-plugin/plugin.json` manifest makes the set installable by the Claude Code
-plugin system.
+Skills are standard `SKILL.md` files under `skills/`, organized by domain.
 
 ## How it works
 
@@ -93,29 +108,42 @@ skill cannot be created by hand (**Poka-yoke** at authoring time).
 
 ```bash
 skills/                 # the skills, by domain
-  meta/                 # the foundation + how to author skills
-    foundation/         # the determinism doctrine every skill inherits
-    creating-skills/    # the authoring procedure
-  engineering/          # (next) secure SDLC: lint/SCA/Semgrep gates, TDD
-tools/                  # the deterministic toolchain (Python)
-  skill_lint/           # the linter + its rule DSL + tests
-  skill_new/            # the scaffolder
-  skillkit/             # guarded primitives
-.claude-plugin/         # plugin.json manifest
-.github/workflows/      # CI: the determinism gate, tests, ruff, Semgrep
+  meta/                 # foundation, creating-skills, setup, cavecrew
+  engineering/          # secure-sdlc, tdd, code-review, supply-chain-audit, engineering,
+                        # git-guardrails, autoguardrails, ralph, software-architecture, ...
+  quality/              # verification-before-completion, polish, overdrive, full-output-enforcement
+  marketing/            # copywriting, ad-creative, cold-email, social-content, revops, ...
+  design/               # web-design-guidelines, ui-ux-pro-max, brandkit, gpt-taste, ...
+  documents/            # pptx, pdf, docx, xlsx (beautiful, deterministic generation)
+  cloud/                # aws-toolkit, azure-toolkit, gcp-toolkit, cloud-best-practices
+  obsidian/             # obsidian-vault (vault compiler), second-brain-crud, ralph-vault
+  management/           # project-management, client-satisfaction, employee-management
+  productivity/         # grill-me, least-code, caveman, handoff, teach, simple
+  social/               # social-media-viral
+tools/                  # the deterministic toolchain (Python): skill_lint, skill_new,
+                        # skill_gate, skill_changelog, skill_docs, skill_update, skillkit
+scripts/                # install.sh, git-commit.sh
+.claude-plugin/         # marketplace.json + plugin.json
+.github/workflows/      # CI: determinism gate, docs, tests, ruff, Semgrep
 ```
 
 ## Categories
 
-Skills are filed by domain. The taxonomy grows as skills land — no empty folders.
+62 skills across 11 domains, every one lint-gated. The taxonomy grows as skills land — no empty folders.
 
 | Domain | What lives here |
 | ------ | --------------- |
-| `meta` | The foundation and skill-authoring skills |
-| `engineering` | Secure SDLC, TDD, linting/SCA gates, code review |
-| `obsidian` | Script-driven second-brain / vault operations |
-| `personal` | Life ops, routines, decision logs |
-| `marketing` · `sales` · `social` | Brand, outreach, content engines |
+| `meta` | Foundation, skill-authoring, install/setup, the cavecrew subagent protocol |
+| `engineering` | Secure SDLC, TDD, code review, supply-chain, architecture, git/auto guardrails, autonomous loops |
+| `quality` | Verification-before-completion, polish, overdrive, full-output enforcement |
+| `marketing` | Copy, ads, cold email, social content, sales enablement, RevOps, PR, psychology |
+| `design` | Web/UI-UX guidelines, design taste, anti-AI-slop, brandkit, brutalist UI |
+| `documents` | Beautiful deterministic pptx, pdf, docx, xlsx generation |
+| `cloud` | AWS / Azure / GCP toolkits + cross-cloud SOC2 best practices |
+| `obsidian` | Source-backed vault compiler + fast second-brain CRUD |
+| `management` | Project management, client satisfaction, people management |
+| `productivity` | grill-me, least-code, caveman, handoff, teach, simple |
+| `social` | Viral research for Instagram + X |
 
 ## Authoring a skill
 
