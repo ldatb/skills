@@ -1,6 +1,6 @@
 ---
-name: ponytail
-description: Write the least code that fully works — climb the laziness ladder before adding anything. Use when the user wants to simplify, cut scope, avoid over-engineering, or review a change for unnecessary complexity.
+name: least-code
+description: Write the least code that fully works — climb the subtraction ladder before adding anything. Use when the user wants to simplify, cut scope, avoid over-engineering, or review a change for unnecessary complexity.
 ---
 
 The best code is the code never written. Climb the ladder and stop at the first rung that holds; reach for new code only after nothing simpler works.

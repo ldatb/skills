@@ -8,6 +8,7 @@ import re
 import sys
 from pathlib import Path
 
+from skill_lint import __version__
 from skill_lint.checks import run_checks
 from skill_lint.core import Finding, Severity, SkillDoc, load_rules
 
@@ -77,6 +78,7 @@ def main(argv: list[str] | None = None) -> int:
         prog="skill-lint",
         description="Deterministic linter for SKILL.md files — wrings ambiguity out of skills.",
     )
+    parser.add_argument("--version", action="version", version=f"skill-lint {__version__}")
     parser.add_argument("paths", nargs="*", help="Files or directories (default: skills/).")
     parser.add_argument("--strict", action="store_true", help="Treat warnings as failures too.")
     parser.add_argument("--fix", action="store_true", help="Apply deterministic autofixes.")

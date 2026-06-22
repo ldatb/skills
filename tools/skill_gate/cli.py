@@ -16,10 +16,16 @@ def main(argv: list[str] | None = None) -> int:
         description="Run deterministic engineering gates for a project's detected stack.",
     )
     parser.add_argument("root", nargs="?", default=".")
-    parser.add_argument("--stack", action="append", help="Force a stack (repeatable). Default: auto-detect.")
-    parser.add_argument("--category", help="Only gates of this category (format/lint/types/sast/sca/secrets/test).")
+    parser.add_argument(
+        "--stack", action="append", help="Force a stack (repeatable). Default: auto-detect."
+    )
+    parser.add_argument(
+        "--category", help="Only gates of this category (format/lint/types/sast/sca/secrets/test)."
+    )
     parser.add_argument("--strict", action="store_true", help="A missing tool counts as a failure.")
-    parser.add_argument("--list", action="store_true", help="List the gates that would run; do not execute them.")
+    parser.add_argument(
+        "--list", action="store_true", help="List the gates that would run; do not execute them."
+    )
     parser.add_argument("--format", choices=["text", "json"], default="text")
     parser.add_argument("--gates", default=None, help="Path to an alternate gates.yaml.")
     args = parser.parse_args(argv)

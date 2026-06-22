@@ -14,7 +14,8 @@
     "./skills/engineering/tdd",
     "./skills/meta/creating-skills",
     "./skills/meta/foundation",
+    "./skills/meta/setup",
     "./skills/productivity/grill-me",
-    "./skills/productivity/ponytail"
+    "./skills/productivity/least-code"
   ]
 }

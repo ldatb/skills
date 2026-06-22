@@ -13,14 +13,20 @@ def main(argv: list[str] | None = None) -> int:
         prog="skill-docs",
         description="Check that relative links and file references in Markdown resolve.",
     )
-    parser.add_argument("paths", nargs="*", help="Files or directories (default: current directory).")
+    parser.add_argument(
+        "paths", nargs="*", help="Files or directories (default: current directory)."
+    )
     parser.add_argument("--format", choices=["text", "json"], default="text")
     args = parser.parse_args(argv)
 
     files, broken = check_paths(args.paths or ["."])
 
     if args.format == "json":
-        print(json.dumps([{"path": b.path, "line": b.line, "target": b.target} for b in broken], indent=2))
+        print(
+            json.dumps(
+                [{"path": b.path, "line": b.line, "target": b.target} for b in broken], indent=2
+            )
+        )
     else:
         for b in broken:
             print(f"{b.path}:{b.line}: broken link -> {b.target}")

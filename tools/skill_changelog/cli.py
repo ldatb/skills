@@ -32,11 +32,15 @@ def main(argv: list[str] | None = None) -> int:
         description="Generate a CHANGELOG section from conventional commits.",
     )
     parser.add_argument("--version", required=True, help="Version label for the new section.")
-    parser.add_argument("--from", dest="from_ref", default=None, help="Start ref, exclusive (default: repo start).")
+    parser.add_argument(
+        "--from", dest="from_ref", default=None, help="Start ref, exclusive (default: repo start)."
+    )
     parser.add_argument("--to", dest="to_ref", default="HEAD", help="End ref (default: HEAD).")
     parser.add_argument("--date", default=None, help="Optional date for the section header.")
     parser.add_argument("--root", default=".")
-    parser.add_argument("--write", default=None, metavar="FILE", help="Prepend the section to FILE.")
+    parser.add_argument(
+        "--write", default=None, metavar="FILE", help="Prepend the section to FILE."
+    )
     args = parser.parse_args(argv)
 
     try:

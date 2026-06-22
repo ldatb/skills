@@ -19,9 +19,7 @@ TYPES: dict[str, str] = {
     "style": "Style",
 }
 
-_CC = re.compile(
-    r"^(?P<type>\w+)(?:\((?P<scope>[^)]+)\))?(?P<breaking>!)?:\s*(?P<desc>.+)$"
-)
+_CC = re.compile(r"^(?P<type>\w+)(?:\((?P<scope>[^)]+)\))?(?P<breaking>!)?:\s*(?P<desc>.+)$")
 
 
 @dataclass(frozen=True)

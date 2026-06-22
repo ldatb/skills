@@ -85,11 +85,15 @@ def build_gates(stacks: list[str], gates: dict, category: str | None = None) -> 
     return out
 
 
-def run_gate(gate: Gate, root: str | Path, *, strict: bool = False, timeout: int = 600) -> GateResult:
+def run_gate(
+    gate: Gate, root: str | Path, *, strict: bool = False, timeout: int = 600
+) -> GateResult:
     resolved = shutil.which(gate.cmd[0])
     if resolved is None:
         status = Status.FAIL if strict else Status.SKIPPED
-        return GateResult(gate, status, None, f"{gate.cmd[0]} not installed ({gate.install or 'n/a'})")
+        return GateResult(
+            gate, status, None, f"{gate.cmd[0]} not installed ({gate.install or 'n/a'})"
+        )
     try:
         proc = subprocess.run(  # noqa: S603 - argv list, absolute path, shell=False
             [resolved, *gate.cmd[1:]],
