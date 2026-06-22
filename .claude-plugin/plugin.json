@@ -1,6 +1,10 @@
 {
   "name": "ldatb-skills",
   "skills": [
+    "./skills/engineering/code-review",
+    "./skills/engineering/secure-sdlc",
+    "./skills/engineering/supply-chain-audit",
+    "./skills/engineering/tdd",
     "./skills/meta/creating-skills",
     "./skills/meta/foundation"
   ]

@@ -1,0 +1,68 @@
+# The engineering gate registry — single source of truth for "how to check this stack".
+#
+# Each stack lists marker files that detect it and an ordered set of gates. A gate is
+# a category, an argv command (run with shell=False, resolved to an absolute path),
+# an optional autofix command, and an install hint shown when the tool is absent.
+# Categories: format, lint, types, sast, sca, secrets, test.
+version: 1
+
+stacks:
+  repo:
+    markers: [".git"]
+    gates:
+      - {id: gitleaks, category: secrets, cmd: [gitleaks, detect, --no-banner], install: "https://github.com/gitleaks/gitleaks"}
+      - {id: trivy-fs, category: sca, cmd: [trivy, fs, --quiet, --exit-code, "1", "."], install: "https://aquasecurity.github.io/trivy"}
+
+  python:
+    markers: [pyproject.toml, requirements.txt, setup.py, setup.cfg]
+    gates:
+      - {id: ruff-format, category: format, cmd: [ruff, format, --check, .], fix: [ruff, format, .], install: "pip install ruff"}
+      - {id: ruff, category: lint, cmd: [ruff, check, .], fix: [ruff, check, --fix, .], install: "pip install ruff"}
+      - {id: mypy, category: types, cmd: [mypy, .], install: "pip install mypy"}
+      - {id: bandit, category: sast, cmd: [bandit, -r, ., -q], install: "pip install bandit"}
+      - {id: semgrep, category: sast, cmd: [semgrep, scan, --error, --quiet, --config, "p/python", .], install: "pip install semgrep"}
+      - {id: pip-audit, category: sca, cmd: [pip-audit], install: "pip install pip-audit"}
+      - {id: pytest, category: test, cmd: [pytest, -q], install: "pip install pytest"}
+
+  node:
+    markers: [package.json]
+    gates:
+      - {id: prettier, category: format, cmd: [npx, --no-install, prettier, --check, .], fix: [npx, --no-install, prettier, --write, .], install: "npm i -D prettier"}
+      - {id: eslint, category: lint, cmd: [npx, --no-install, eslint, .], fix: [npx, --no-install, eslint, --fix, .], install: "npm i -D eslint"}
+      - {id: tsc, category: types, cmd: [npx, --no-install, tsc, --noEmit], install: "npm i -D typescript"}
+      - {id: semgrep, category: sast, cmd: [semgrep, scan, --error, --quiet, --config, "p/javascript", .], install: "pip install semgrep"}
+      - {id: npm-audit, category: sca, cmd: [npm, audit, --audit-level, high], install: "ships with npm"}
+
+  go:
+    markers: [go.mod]
+    gates:
+      - {id: gofmt, category: format, cmd: [gofmt, -l, .], install: "ships with Go"}
+      - {id: go-vet, category: lint, cmd: [go, vet, "./..."], install: "ships with Go"}
+      - {id: staticcheck, category: lint, cmd: [staticcheck, "./..."], install: "go install honnef.co/go/tools/cmd/staticcheck@latest"}
+      - {id: govulncheck, category: sca, cmd: [govulncheck, "./..."], install: "go install golang.org/x/vuln/cmd/govulncheck@latest"}
+      - {id: go-test, category: test, cmd: [go, test, "./..."], install: "ships with Go"}
+
+  terraform:
+    markers: ["*.tf"]
+    gates:
+      - {id: terraform-fmt, category: format, cmd: [terraform, fmt, -check, -recursive], fix: [terraform, fmt, -recursive], install: "https://developer.hashicorp.com/terraform"}
+      - {id: tflint, category: lint, cmd: [tflint], install: "https://github.com/terraform-linters/tflint"}
+      - {id: checkov, category: sast, cmd: [checkov, -d, ., --quiet, --compact], install: "pip install checkov"}
+      - {id: trivy-config, category: sca, cmd: [trivy, config, --quiet, --exit-code, "1", "."], install: "https://aquasecurity.github.io/trivy"}
+
+  docker:
+    markers: [Dockerfile]
+    gates:
+      - {id: hadolint, category: lint, cmd: [hadolint, Dockerfile], install: "https://github.com/hadolint/hadolint"}
+      - {id: trivy-config, category: sast, cmd: [trivy, config, --quiet, --exit-code, "1", "."], install: "https://aquasecurity.github.io/trivy"}
+
+  kubernetes:
+    markers: ["kustomization.yaml", "kustomization.yml", "Chart.yaml"]
+    gates:
+      - {id: kubeconform, category: lint, cmd: [kubeconform, -strict, -summary, .], install: "https://github.com/yannh/kubeconform"}
+      - {id: kube-linter, category: sast, cmd: [kube-linter, lint, .], install: "https://github.com/stackrox/kube-linter"}
+
+  ansible:
+    markers: [ansible.cfg, "playbook.yml", "playbook.yaml"]
+    gates:
+      - {id: ansible-lint, category: lint, cmd: [ansible-lint], install: "pip install ansible-lint"}
