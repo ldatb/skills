@@ -252,7 +252,6 @@ This generator defines the full style sheet first, then builds one cover-plus-se
 ```python
 from docx import Document
 from docx.shared import Pt, Inches, RGBColor
-from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 ACCENT = RGBColor(0x0B, 0x5C, 0x8A)   # dark accent — white text on it clears AA
@@ -283,7 +282,7 @@ def define_styles(doc):
     title.font.color.rgb = INK
     title.font.bold = True
 
-    cap = doc.styles.add_style("Caption", WD_STYLE_TYPE.PARAGRAPH)
+    cap = doc.styles["Caption"]   # built-in — fetch and modify, never re-add
     cap.font.name = "Georgia"
     cap.font.size = Pt(9)
     cap.font.italic = True

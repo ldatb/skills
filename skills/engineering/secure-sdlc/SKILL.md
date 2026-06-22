@@ -11,12 +11,18 @@ Ship a change only after every deterministic gate is green, then record what "gr
 
 2. **Pass the quality gates.** Run `skill-gate --category format`, then `--category lint`, then `--category types`, in that order. A non-zero exit blocks the pipeline; fix the source, then rerun the failing category until its exit code is zero. The step is done when format, lint, and types each exit zero.
 
-3. **Pass the security gates.** Run `skill-gate --category sast` (Semgrep), then `--category sca` (trivy or pip-audit), then `--category secrets` (gitleaks), in that order. Record each finding with its severity, rule id, and location. A critical or high finding blocks the merge until the finding is fixed or a waiver is recorded per [the pipeline reference](references/pipeline.md). The step is done when each security category exits zero or carries a recorded waiver.
+3. **Pass the security gates.** Run `skill-gate --category sast` (Semgrep), then `--category sca` (trivy or pip-audit), then `--category secrets` (gitleaks), in that order. Record each finding with its severity, rule id, and location. A critical or high finding blocks the merge until the finding is fixed or a waiver-log entry is recorded per [the pipeline reference](references/pipeline.md). The step is done when each security category exits zero or carries a recorded waiver-log entry that a reviewer has checked.
 
 4. **Pass the test gate.** Run `skill-gate --category test`. A failing suite blocks the change; fix the source, then rerun until the suite exits zero. The step is done when the test category exits zero.
 
 5. **Seal the merge gate.** Run `skill-gate --strict` for the final pass, where a missing tool counts as a failure rather than a silent skip. A red result stops the line (Jidoka); a green result means every category ran on a present tool. The step is done when `skill-gate --strict` exits zero.
 
-6. **Produce the attestation.** Capture the machine-readable gate record with `skill-gate --strict --format json`, generate the SBOM through [supply-chain-audit](../supply-chain-audit/SKILL.md), and record any waiver beside them. Confirm the record names a result per category from step 1. The step is done when the gate record and the SBOM both exist for this change.
+6. **Produce the attestation.** Capture the machine-readable gate record with `skill-gate --strict --format json`, generate the SBOM with `syft` (per [supply-chain-audit](../supply-chain-audit/SKILL.md)), and record any waiver-log entry beside them. The SBOM command reads the locked tree:
+
+   ```sh
+   syft . -o cyclonedx-json
+   ```
+
+   Confirm the record names a result per category from step 1. The step is done when the gate record and the SBOM file both exist for this change.
 
 See also: [the determinism doctrine](../../meta/foundation/SKILL.md).

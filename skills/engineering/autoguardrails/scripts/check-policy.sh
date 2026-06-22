@@ -53,26 +53,40 @@ parse_rules() {
   done
 }
 
-# Scan a newline-separated list of files against TAB-separated rules on stdin.
+# Scan a NUL-delimited file list against TAB-separated rules on stdin.
+# The file list is read from FD 3 (so stdin stays free for the rules) and the
+# scanned paths are buffered into a bash array. Because the paths never pass
+# through a newline-joined string, a filename containing a newline survives
+# intact — this is the real NUL-safe path the original comment only claimed.
 # Prints each hit as path:line: <message>. Returns 1 if any hit, 0 if clean.
 scan_files() {
-  local files_list="$1"
   local rules regex message hits hit
+  local -a files=()
   rules=$(cat)
   hits=0
   [ -n "$rules" ] || { echo "no DENY rules loaded" >&2; return 2; }
+  # Collect the NUL-delimited file list from FD 3 into an array.
+  while IFS= read -r -d '' hit; do
+    files+=("$hit")
+  done <&3
+  [ "${#files[@]}" -gt 0 ] || return 0
+  local f
   while IFS="$(printf '\t')" read -r regex message; do
     [ -n "$regex" ] || continue
-    # grep -nE over the file list; -I skips binary files, --no-messages hushes
-    # unreadable paths. xargs feeds NUL-safe when files come from git ls-files -z.
-    while IFS= read -r hit; do
-      [ -n "$hit" ] || continue
-      printf '%s: %s\n' "$hit" "$message"
-      hits=1
-    done <<EOF
-$(printf '%s\n' "$files_list" | grep -v '^$' | tr '\n' '\0' \
-    | xargs -0 grep -nIE --no-messages -- "$regex" 2>/dev/null || true)
-EOF
+    # Scan one file at a time. The filename is NEVER passed through grep's stdout
+    # (no -H), so a path containing a newline cannot split or corrupt a hit
+    # record — we re-attach the exact array element ourselves. grep emits only
+    # `line:content`; -nIE = line numbers, skip binary, extended regex;
+    # --no-messages hushes unreadable paths. This is genuinely NUL-/newline-safe
+    # and portable: it does not depend on grep's -z output framing, which differs
+    # between GNU and BSD grep.
+    for f in "${files[@]}"; do
+      while IFS= read -r hit; do
+        [ -n "$hit" ] || continue
+        printf '%s:%s: %s\n' "$f" "$hit" "$message"
+        hits=1
+      done < <(grep -nIE --no-messages -- "$regex" "$f" 2>/dev/null || true)
+    done
   done <<EOF
 $rules
 EOF
@@ -81,7 +95,7 @@ EOF
 
 # Full run against the real repository: parse policy, list git-tracked files, scan.
 run_repo() {
-  local global_policy policies files
+  local global_policy policies
   global_policy="$(script_dir)/../POLICY.md"
   if [ "$#" -gt 0 ]; then
     policies=$(printf '%s\n' "$@")
@@ -92,13 +106,18 @@ run_repo() {
 
   git rev-parse --is-inside-work-tree >/dev/null 2>&1 || {
     echo "not inside a git work tree; run at the repo root" >&2; return 2; }
-  files=$(git ls-files)
-  [ -n "$files" ] || { echo "no git-tracked files to scan"; return 0; }
+  # Guard the empty-tree case without collapsing the NUL stream into a variable:
+  # a lone `git ls-files` check would be enough, but we keep the file list as a
+  # NUL-delimited stream end-to-end so newline-bearing paths are never mangled.
+  if [ -z "$(git ls-files | head -n 1)" ]; then
+    echo "no git-tracked files to scan"; return 0
+  fi
 
   local rules
   # shellcheck disable=SC2046
   rules=$(parse_rules $(printf '%s\n' "$policies"))
-  printf '%s\n' "$rules" | scan_files "$files"
+  # rules -> stdin; the NUL-delimited file list -> FD 3 (see scan_files).
+  printf '%s\n' "$rules" | scan_files 3< <(git ls-files -z)
 }
 
 # Self-check with no real git: build a temp policy + temp files in a temp dir,
@@ -131,16 +150,17 @@ selftest() {
   [ "$(printf '%s\n' "$rules" | grep -c .)" -eq 2 ] \
     || { echo "FAIL: expected 2 parsed rules"; exit 1; }
 
-  # known-bad must match.
+  # known-bad must match. Feed the file list NUL-delimited on FD 3, matching the
+  # real run_repo path.
   set +e
-  out=$(printf '%s\n' "$rules" | scan_files "$bad"); rc=$?
+  out=$(printf '%s\n' "$rules" | scan_files 3< <(printf '%s\0' "$bad")); rc=$?
   set -e
   [ "$rc" -ne 0 ] || { echo "FAIL: known-bad not flagged"; exit 1; }
   case "$out" in *"AWS key"*) : ;; *) echo "FAIL: wrong message for known-bad"; exit 1 ;; esac
 
   # known-good must be clean.
   set +e
-  out=$(printf '%s\n' "$rules" | scan_files "$good"); rc=$?
+  out=$(printf '%s\n' "$rules" | scan_files 3< <(printf '%s\0' "$good")); rc=$?
   set -e
   [ "$rc" -eq 0 ] || { echo "FAIL: known-good flagged ($out)"; exit 1; }
 

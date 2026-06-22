@@ -306,12 +306,12 @@ leverage (as a verb), unlock, revolutionary, robust.
 
 | Token | Value | Role | AA pair |
 |---|---|---|---|
-| `color.brand` | `#3b5bdb` | Primary actions, identity | `color.on-brand` `#ffffff` (8.6:1) |
-| `color.accent` | `#0ca678` | Positive deltas, highlights | `color.on-accent` `#ffffff` (3.5:1, large only) |
-| `color.bg` | `#ffffff` | Page base | `color.fg` `#1a1b1e` (16.1:1) |
-| `color.fg` | `#1a1b1e` | Body text | on `color.bg` (16.1:1) |
-| `color.neutral.500` | `#868e96` | Muted text, borders | on `#ffffff` (3.5:1, large/UI only) |
-| `color.danger` | `#e03131` | Negative deltas, errors | `color.on-danger` `#ffffff` (4.6:1) |
+| `color.brand` | `#3b5bdb` | Primary actions, identity | `color.on-brand` `#ffffff` (5.7:1) |
+| `color.accent` | `#0ca678` | Positive deltas, highlights | `color.on-accent` `#ffffff` (3.1:1, large only) |
+| `color.bg` | `#ffffff` | Page base | `color.fg` `#1a1b1e` (17.2:1) |
+| `color.fg` | `#1a1b1e` | Body text | on `color.bg` (17.2:1) |
+| `color.neutral.500` | `#868e96` | Muted text, borders | on `#ffffff` (3.3:1, large/UI only) |
+| `color.danger` | `#e03131` | Negative deltas, errors | `color.on-danger` `#ffffff` (4.5:1) |
 | `font.family.display` | `Söhne` | Headings | — |
 | `font.family.body` | `Inter` | Body, UI | — |
 | `font.size.base` | `16px` | Body baseline | — |

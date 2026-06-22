@@ -51,8 +51,8 @@ green.
 ## When a finding blocks, and when it may be waived
 
 The default for a critical or high finding is **block**. A finding drops below blocking
-only through a recorded waiver — never through silence, and never by editing a threshold to
-duck the alarm.
+only through a recorded waiver-log entry that a reviewer accepts — never through silence, and
+never by editing a threshold to duck the alarm.
 
 A waiver is legitimate in a bounded set of cases:
 
@@ -66,16 +66,19 @@ nobody wants to read, or to cover a finding the author has not actually understo
 
 ### How a waiver is recorded
 
-A waiver is data, not a conversation. Each waiver entry carries:
+A waiver is a recorded convention, not a gate feature. `skill-gate` has no waiver mechanism:
+it neither reads a waiver file nor suppresses a finding. A waiver lives instead as a
+human-maintained entry in the waiver log, and a reviewer checks it against the gate output by
+hand. Each waiver-log entry carries:
 
 - the **rule id** and the exact **location** (path and line) being waived,
 - a one-line **justification** naming the false-positive reason or the compensating control,
 - the **approver** and the **date** the waiver was granted,
-- an **expiry date** after which the waiver stops suppressing the finding.
+- an **expiry date** the reviewer checks, after which the entry no longer excuses the finding.
 
-`skill-gate` reads the waiver file, suppresses only the matching rule-id-and-location pair,
-and copies every active waiver into the attestation. A waiver with no expiry is rejected by
-the gate, so a waiver cannot become silently permanent (see the failure modes below).
+A waiver-log entry with no expiry is treated as invalid by the reviewer, so a waiver cannot
+become silently permanent (see the failure modes below). The waiver log is attached to the
+attestation alongside the gate record and the SBOM.
 
 ## The attestation — what "secure at this level" means
 
@@ -83,12 +86,12 @@ The attestation is assembled once the gates are green, with the machine-readable
 artifact is the difference between "the scans ran" and "here is proof of what the scans
 covered." The attestation records four things:
 
-- **SBOM** — the software bill of materials: every dependency and version that composes the
-  build, so a future CVE can be matched against the exact tree that shipped.
+- **SBOM** — the software bill of materials from `syft`: every dependency and version that
+  composes the build, so a future CVE can be matched against the exact tree that shipped.
 - **CVE summary** — the sca findings at ship time: each known vulnerability, its severity,
-  and whether it was fixed or waived.
-- **Waiver list** — every active waiver with its rule id, justification, approver, and
-  expiry, so an auditor sees what was consciously accepted.
+  and whether it was fixed or waived in the log.
+- **Waiver log** — every active waiver-log entry with its rule id, justification, approver,
+  and expiry, so an auditor sees what a reviewer consciously accepted.
 - **Gate-version record** — the version of each scanner and ruleset that produced the
   result, so a green result is reproducible and a later ruleset upgrade is detectable.
 
@@ -115,12 +118,13 @@ opening a hole.
 
 ### A waiver that becomes permanent
 
-A waiver is meant as a dated exception, yet an undated waiver quietly hardens into policy:
-the finding is suppressed forever, the compensating control rots, and the original reason is
-forgotten. Two mechanics keep a waiver honest. First, the gate rejects any waiver without an
-expiry, so an eternal waiver cannot be written. Second, an expired waiver stops suppressing
-its finding, so the alarm returns and forces a fresh decision. A waiver that keeps getting
-renewed without scrutiny is itself a finding — surface the renewal in review.
+A waiver is meant as a dated exception, yet an undated waiver-log entry quietly hardens into
+policy: the finding is excused forever, the compensating control rots, and the original reason
+is forgotten. Two review conventions keep a waiver honest. First, a reviewer rejects any
+waiver-log entry without an expiry, so an eternal waiver cannot stand. Second, once the expiry
+passes, the entry no longer excuses the finding, so the alarm returns and forces a fresh
+decision. A waiver that keeps getting renewed without scrutiny is itself a finding — surface
+the renewal in review.
 
 ## Worked example — one change through the pipeline
 
@@ -138,20 +142,21 @@ through the gates:
    developer rewrites the query as parameterized; the rerun exits zero. A real defect was
    caught before merge.
 6. **sca (pip-audit)** → reports a high CVE in a transitive `urllib3` pin with no fixed
-   release yet. The path is unreachable from the new endpoint, so a waiver is recorded:
-   rule id, the package and line, justification "no fixed version; endpoint does not reach
-   the affected code path," approver, today's date, and a 30-day expiry. The gate now passes
-   with the waiver noted.
+   release yet. The path is unreachable from the new endpoint, so a waiver-log entry is
+   written: rule id, the package and line, justification "no fixed version; endpoint does not
+   reach the affected code path," approver, today's date, and a 30-day expiry. A reviewer
+   checks the entry against the gate output and accepts the finding for this revision.
 7. **secrets (gitleaks)** → finds a test API key in a new fixture (high). A fixture secret
    still leaks, so the developer replaces the literal with an environment lookup; the rerun
    exits zero.
 8. **test** → the suite passes, including a new test that fails without the parameterized
    query.
 9. **`--strict`** → every tool is present and green, so the merge gate exits zero.
-10. **attestation** → the gate record from `skill-gate --strict --format json`, the SBOM (via
-    supply-chain-audit), a CVE summary listing the waived `urllib3` finding, and the one
-    active waiver with its 30-day expiry are collected into the attestation. The change ships "secure at this level," and the waived CVE is now tracked
-    toward its expiry rather than forgotten.
+10. **attestation** → the gate record from `skill-gate --strict --format json`, the SBOM from
+    `syft` (per supply-chain-audit), a CVE summary listing the waived `urllib3` finding, and
+    the one active waiver-log entry with its 30-day expiry are collected into the attestation.
+    The change ships "secure at this level," and the waived CVE is now tracked toward its
+    expiry rather than forgotten.
 
 The leverage is in steps 5 through 7: the injection sink, the unreachable CVE, and the
 fixture secret are three distinct defect classes, each caught by the one gate that could see

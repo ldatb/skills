@@ -22,8 +22,9 @@ Work the reference for the depth behind each step: [client health](references/cl
    the reference against the client's own baseline: response latency, sentiment,
    usage and engagement, payment timeliness, and scope tension. Delegate the client
    note and its links to projects, people, and commitments to
-   [second-brain-crud](references/client-health.md). This step is done once each of the
-   five signals has a baseline and a current reading, not a single revenue number.
+   [second-brain-crud](../../obsidian/second-brain-crud/SKILL.md) — capture it with
+   `vault.sh capture client "<name>" company="<company>"`. This step is done once each of
+   the five signals has a baseline and a current reading, not a single revenue number.
 
 2. **Score the health red, yellow, or green.** Weight the five signals, sum them, and
    bucket the client into exactly one band — green for five steady signals, yellow for
@@ -59,10 +60,10 @@ Work the reference for the depth behind each step: [client health](references/cl
 
 7. **Record and correlate in the vault.** Append the health band, the signal readings,
    and the diagnosed driver to the client's dated health log, and write the linked
-   notes through [second-brain-crud](references/client-health.md) rather than by hand.
-   Read the health log beside the linked project and commitment notes so a dip lines up
-   with its cause and the next quarter routes on evidence. This step is done once the
-   current assessment is logged, linked, and read against its driver.
+   notes through [second-brain-crud](../../obsidian/second-brain-crud/SKILL.md) rather
+   than by hand. Read the health log beside the linked project and commitment notes so a
+   dip lines up with its cause and the next quarter routes on evidence. This step is done
+   once the current assessment is logged, linked, and read against its driver.
 
 ## Done when
 

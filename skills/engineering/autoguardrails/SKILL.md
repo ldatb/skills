@@ -9,7 +9,7 @@ The rule syntax, the global-vs-repo layering, the failure modes, and a worked ex
 
 ## Steps
 
-1. **Confirm the scanner is sound.** Run `scripts/check-policy.sh --selftest`. The selftest builds a throwaway policy plus a known-bad and a known-good file, then asserts the match and the miss without touching the real repo. The step is done once the command prints `check-policy selftest: ok` and exits 0.
+1. **Confirm the scanner is sound.** Run `skills/engineering/autoguardrails/scripts/check-policy.sh --selftest` from the repo root. The selftest builds a throwaway policy plus a known-bad and a known-good file, then asserts the match and the miss without touching the real repo. The step is done once the command prints `check-policy selftest: ok` and exits 0.
 
 2. **State what the policy must forbid.** Name the concrete hazard before writing a rule: a leaked secret shape, a dangerous call, a banned dependency or license, a missing required header. A rule without a named hazard guards nothing — so write the hazard down first. The step is done once each intended rule maps to one named hazard.
 
@@ -17,6 +17,6 @@ The rule syntax, the global-vs-repo layering, the failure modes, and a worked ex
 
 4. **Calibrate the regex against real text.** Run the scanner and read every reported violation. A regex that flags a safe line is too broad; a hazard that slips through is too narrow. The step is done once a known violation is caught and no safe line is flagged.
 
-5. **Run the scan.** Run `scripts/check-policy.sh` at the repo root. The scanner reads the policy files, scans the git-tracked files via `git ls-files`, and prints each hit as `path:line: <message>`. The step is done once the command exits 0 (clean) or every printed violation is triaged.
+5. **Run the scan.** Run `skills/engineering/autoguardrails/scripts/check-policy.sh` at the repo root. The scanner reads the policy files, scans the git-tracked files via `git ls-files`, and prints each hit as `path:line: <message>`. The step is done once the command exits 0 (clean) or every printed violation is triaged.
 
-6. **Wire the gate into the pipeline.** Register the scanner as a pre-commit hook and a CI step, both invoking `scripts/check-policy.sh` at the repo root. A policy nobody runs enforces nothing — so a non-zero exit must block the commit and the build. The step is done once a deliberate known-bad line turns the gate red.
+6. **Wire the gate into the pipeline.** Register the scanner as a pre-commit hook and a CI step, both invoking `skills/engineering/autoguardrails/scripts/check-policy.sh` at the repo root. A policy nobody runs enforces nothing — so a non-zero exit must block the commit and the build. The step is done once a deliberate known-bad line turns the gate red.

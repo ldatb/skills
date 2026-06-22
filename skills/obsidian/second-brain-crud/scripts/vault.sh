@@ -3,7 +3,9 @@
 # Capture life/work/project notes fast, link entities, and find them again — with
 # no destructive operation beyond a single guarded, in-vault delete.
 #
-#   vault.sh capture <type> <title>   -> create a typed note, print its path
+#   vault.sh capture <type> <title> [key=value ...]
+#                                     -> create a typed note, print its path; each
+#                                        trailing key=value lands as a frontmatter field
 #   vault.sh append  <note> <text>    -> append a timestamped bullet (atomic)
 #   vault.sh link    <from> <to>      -> add a [[wikilink]] under "## Related"
 #   vault.sh daily                    -> create-or-open today's daily note
@@ -12,14 +14,15 @@
 #   vault.sh --selftest               -> build a temp vault, exercise all of the above
 #
 # Vault root resolves from $VAULT (else ./vault). Types: person project meeting
-# idea task decision daily. Shell, not Python: the job is slug + file plumbing.
+# idea task decision daily client feedback 1on1 company. Shell, not Python: the
+# job is slug + file plumbing.
 # Bash is required for `set -o pipefail`; the rest stays POSIX-clean. Filenames
 # never overwrite — uniqueness comes from a noclobber (`set -C`) reservation loop,
 # the shell's O_EXCL, mirroring skillkit.unique_path. Deletion goes through a guard
 # that refuses the vault root and anything outside it, mirroring skillkit.safe_remove.
 set -euo pipefail
 
-TYPES="person project meeting idea task decision daily"
+TYPES="person project meeting idea task decision daily client feedback 1on1 company"
 
 # --- helpers ---------------------------------------------------------------
 
@@ -51,6 +54,35 @@ slugify() {
 require_type() {
   echo "$TYPES" | grep -qw -- "$1" \
     || { echo "unknown type: $1 (allowed: $TYPES)" >&2; return 2; }
+}
+
+# Render one `key=value` capture argument as a safe YAML frontmatter line, echoed
+# without a trailing newline so callers control line joining. The key must be a
+# simple identifier ([a-z_]+); anything else is rejected at the boundary. The
+# value is emitted bare unless it could break the YAML — a value containing `:`,
+# `#`, a leading/trailing space, or a double quote is wrapped in double quotes
+# with embedded backslashes and quotes escaped, so the frontmatter stays valid.
+render_field() {
+  local pair="$1" key value
+  case "$pair" in
+    *=*) : ;;
+    *) echo "invalid field (expected key=value): $pair" >&2; return 2 ;;
+  esac
+  key=${pair%%=*}
+  value=${pair#*=}
+  case "$key" in
+    *[!a-z_]* | "") echo "invalid field key (allowed [a-z_]+): $key" >&2; return 2 ;;
+  esac
+  case "$value" in
+    *:* | *"#"* | *'"'* | *\\* | " "* | *" ")
+      value=${value//\\/\\\\}
+      value=${value//\"/\\\"}
+      printf '%s: "%s"' "$key" "$value"
+      ;;
+    *)
+      printf '%s: %s' "$key" "$value"
+      ;;
+  esac
 }
 
 # Reserve a brand-new path under a directory, never overwriting. `set -C`
@@ -107,29 +139,54 @@ resolve_note() {
 
 # Render the YAML-frontmatter + body template for a note type. Frontmatter is
 # uniform across types (so correlation queries stay simple); the type drives the
-# tag, the heading set, and the type-specific fields.
+# tag, the heading set, and the type-specific fields. Any extra arguments are
+# `key=value` pairs (already validated by the caller) written as frontmatter
+# fields, so a capture can set custom fields (e.g. `sensitivity=private`,
+# `owner=lucas`) inline without a follow-up edit. A user field whose key matches
+# a type default *replaces* that default (so `project ... owner=lucas` yields a
+# single `owner: lucas`, never a duplicate `owner:` key); a new key is appended.
 render_template() {
-  local type="$1" title="$2" today="$3"
+  local type="$1" title="$2" today="$3" defaults pair key
+  shift 3
+  # Type-specific default fields, one per line, collected so user overrides can
+  # drop the matching default before emission.
+  case "$type" in
+    person)   defaults=$'company:\nrole:' ;;
+    project)  defaults=$'status: active\nowner:' ;;
+    meeting)  defaults=$(printf 'date: %s\nattendees: []' "$today") ;;
+    decision) defaults=$(printf 'date: %s\nstatus: proposed' "$today") ;;
+    task)     defaults=$'status: todo\ndue:' ;;
+    idea)     defaults='status: seed' ;;
+    daily)    defaults=$(printf 'date: %s' "$today") ;;
+    client)   defaults=$'status: green\ncompany:' ;;
+    feedback) defaults=$(printf 'date: %s' "$today") ;;
+    1on1)     defaults=$(printf 'date: %s' "$today") ;;
+    company)  defaults='industry:' ;;
+    *)        defaults='' ;;
+  esac
+  # Drop any default line whose key is overridden by a user-supplied field.
+  for pair in "$@"; do
+    key=${pair%%=*}
+    [ -n "$defaults" ] && defaults=$(printf '%s\n' "$defaults" \
+      | grep -v -- "^$key:" || true)
+  done
   printf '%s\n' '---'
   printf 'title: "%s"\n' "$title"
   printf 'type: %s\n' "$type"
   printf 'created: %s\n' "$today"
   printf 'tags: [%s]\n' "$type"
-  case "$type" in
-    person)   printf 'company:\nrole:\n' ;;
-    project)  printf 'status: active\nowner:\n' ;;
-    meeting)  printf 'date: %s\nattendees: []\n' "$today" ;;
-    decision) printf 'date: %s\nstatus: proposed\n' "$today" ;;
-    task)     printf 'status: todo\ndue:\n' ;;
-    idea)     printf 'status: seed\n' ;;
-    daily)    printf 'date: %s\n' "$today" ;;
-  esac
+  [ -n "$defaults" ] && printf '%s\n' "$defaults"
+  for pair in "$@"; do
+    render_field "$pair"
+    printf '\n'
+  done
   printf '%s\n\n' '---'
   printf '# %s\n\n' "$title"
   case "$type" in
     meeting)  printf '## Notes\n\n## Decisions\n\n## Action items\n\n' ;;
     decision) printf '## Context\n\n## Decision\n\n## Consequences\n\n' ;;
     daily)    printf '## Log\n\n## Tasks\n\n' ;;
+    1on1)     printf '## Notes\n\n## Action items\n\n' ;;
     *)        printf '## Notes\n\n' ;;
   esac
   printf '## Related\n\n'
@@ -137,17 +194,32 @@ render_template() {
 
 # --- subcommands -----------------------------------------------------------
 
-# capture <type> <title>: create a typed note with a deterministic slug and a
-# collision-free filename. Never overwrites; prints the created path.
+# capture <type> <title> [key=value ...]: create a typed note with a
+# deterministic slug and a collision-free filename. Each trailing key=value is
+# written as a frontmatter field (key validated [a-z_]+, value safely quoted).
+# Never overwrites; prints the created path. Fields are validated before any path
+# is reserved, so a bad field aborts without leaving an empty note behind.
 cmd_capture() {
-  [ "$#" -eq 2 ] || { echo "usage: vault.sh capture <type> <title>" >&2; return 2; }
-  local type="$1" title="$2" root slug today path
+  [ "$#" -ge 2 ] || { echo "usage: vault.sh capture <type> <title> [key=value ...]" >&2; return 2; }
+  local type="$1" title="$2" root slug today path pair key
+  shift 2
   require_type "$type" || return 2
+  # Validate every field up front (fail fast, before reserving a path). Reserved
+  # structural keys are off-limits — overriding them would break correlation
+  # queries that depend on uniform title/type/created/tags frontmatter.
+  for pair in "$@"; do
+    render_field "$pair" >/dev/null || return 2
+    key=${pair%%=*}
+    case "$key" in
+      title | type | created | tags)
+        echo "reserved field key (set by the template): $key" >&2; return 2 ;;
+    esac
+  done
   root=$(vault_root)
   slug=$(slugify "$title")
   today=$(date +%Y-%m-%d)
   path=$(reserve_path "$root/$type" "$slug" ".md")
-  atomic_write "$path" "$(render_template "$type" "$title" "$today")"
+  atomic_write "$path" "$(render_template "$type" "$title" "$today" "$@")"
   printf '%s\n' "$path"
 }
 
@@ -262,10 +334,39 @@ cmd_rm() {
 
 # --- selftest --------------------------------------------------------------
 
+# Assert that a note's YAML frontmatter block parses. Dependency-free and
+# deterministic (no interpreter, so it cannot be tripped by a wrapped/shimmed
+# python on the host): extract the block between the first two `---` lines, then
+# require every line to be blank, a `- ` list item, or `key: value` whose value
+# is double-quoted, an inline `[...]` list, or free of the YAML-breaking bare
+# `:`/`#`. Returns 0 when the frontmatter is valid, 1 otherwise. Selftest only.
+assert_valid_frontmatter() {
+  local file="$1" block
+  block=$(awk 'NR==1 && $0!="---"{exit 1} NR==1{next} $0=="---"{exit} {print}' "$file") \
+    || return 1
+  printf '%s\n' "$block" | awk '
+    /^[[:space:]]*$/ { next }
+    /^- / { next }
+    {
+      i = index($0, ":")
+      if (i == 0) { exit 1 }
+      val = substr($0, i + 1)
+      sub(/^[[:space:]]+/, "", val)
+      sub(/[[:space:]]+$/, "", val)
+      if (val == "") { next }                       # bare key (e.g. owner:)
+      if (val ~ /^".*"$/) { next }                  # quoted value is safe
+      if (val ~ /^\[.*\]$/) { next }                # inline list is safe
+      if (val ~ /[:#]/) { exit 1 }                  # bare special char breaks YAML
+      next
+    }
+    END { exit 0 }
+  '
+}
+
 # Build a throwaway vault, exercise every subcommand, and assert structure (not
 # exact timestamps). Cleans up only the mktemp-owned directory. Exit 0 on success.
 selftest() {
-  local tmp out person project meeting
+  local tmp out person project meeting client before after
 
   tmp=$(mktemp -d "${TMPDIR:-/tmp}/second-brain.XXXXXX")
   trap 'test -n "${tmp:-}" && test -d "$tmp" && find "$tmp" -mindepth 0 -maxdepth 4 -delete' EXIT
@@ -296,6 +397,41 @@ selftest() {
 
   meeting=$(cmd_capture meeting "Kickoff sync")
   grep -q '^## Action items$' "$meeting" || { echo "FAIL: meeting headings"; exit 1; }
+
+  # an added type (client) captures into its own directory with a typed tag.
+  client=$(cmd_capture client "Acme Corp")
+  [ -f "$client" ] || { echo "FAIL: client note not created"; exit 1; }
+  case "$client" in */client/acme-corp.md) : ;; *) echo "FAIL: client path ($client)"; exit 1 ;; esac
+  grep -q '^type: client$' "$client" || { echo "FAIL: client frontmatter type"; exit 1; }
+  grep -q '^tags: \[client\]$' "$client" || { echo "FAIL: client tag"; exit 1; }
+
+  # key=value capture args land as frontmatter fields, and the YAML stays valid.
+  out=$(cmd_capture feedback "SBI for Ada" sensitivity=private owner=lucas)
+  grep -q '^sensitivity: private$' "$out" || { echo "FAIL: key=value sensitivity field"; exit 1; }
+  grep -q '^owner: lucas$' "$out" || { echo "FAIL: key=value owner field"; exit 1; }
+  assert_valid_frontmatter "$out" || { echo "FAIL: key=value frontmatter not valid YAML"; exit 1; }
+
+  # a value carrying YAML-special characters is quoted so the frontmatter parses.
+  out=$(cmd_capture project "Migration" 'note=phase: 1 #urgent')
+  grep -q '^note: "phase: 1 #urgent"$' "$out" || { echo "FAIL: special value not quoted"; exit 1; }
+  assert_valid_frontmatter "$out" || { echo "FAIL: quoted value frontmatter not valid YAML"; exit 1; }
+
+  # a user field overriding a type default replaces it — no duplicate key.
+  out=$(cmd_capture project "Owned" owner=lucas company=acme cadence=weekly)
+  [ "$(grep -c '^owner:' "$out")" -eq 1 ] || { echo "FAIL: owner key duplicated"; exit 1; }
+  grep -q '^owner: lucas$' "$out" || { echo "FAIL: owner override value"; exit 1; }
+  grep -q '^company: acme$' "$out" || { echo "FAIL: company field"; exit 1; }
+  grep -q '^cadence: weekly$' "$out" || { echo "FAIL: cadence field"; exit 1; }
+  assert_valid_frontmatter "$out" || { echo "FAIL: override frontmatter not valid YAML"; exit 1; }
+
+  # reserved structural keys cannot be overridden via key=value.
+  cmd_capture idea "Reserved" type=person 2>/dev/null && { echo "FAIL: reserved key accepted"; exit 1; } || true
+
+  # a bad field key is rejected and leaves no note behind.
+  before=$({ find "$tmp/vault/idea" -type f 2>/dev/null || true; } | wc -l)
+  cmd_capture idea "Bad field" "Bad Key=x" 2>/dev/null && { echo "FAIL: bad field key accepted"; exit 1; } || true
+  after=$({ find "$tmp/vault/idea" -type f 2>/dev/null || true; } | wc -l)
+  [ "$before" = "$after" ] || { echo "FAIL: bad field left an orphan note"; exit 1; }
 
   # append adds a timestamped bullet under ## Log (assert bullet + text + section,
   # not the exact time), and never below ## Related.
@@ -348,6 +484,7 @@ selftest() {
 
 usage() {
   echo "usage: vault.sh <capture|append|link|daily|find|rm> [args]" >&2
+  echo "       vault.sh capture <type> <title> [key=value ...]" >&2
   echo "       vault.sh --selftest" >&2
   echo "types: $TYPES" >&2
   echo "vault root: \$VAULT (default ./vault)" >&2

@@ -21,6 +21,13 @@ The threat model, the pinning discipline, the SBOM formats, and a worked CVE tri
 
 6. **Decide and record a response per finding.** Assign one outcome to each triaged finding — upgrade, pin/override, patch, or accept-with-justification — following [the response options](references/supply-chain.md); a silent dismissal is itself the defect. The step is complete when every finding has exactly one recorded outcome and a stated reason.
 
-7. **Attest the build.** Generate the SBOM through `skill-gate` (CycloneDX for the security pipeline, SPDX when a contract names it), built from the same locked tree the build ships. Write the report: the SBOM path, vulnerability counts by severity, the per-finding outcomes, and the secrets result. The audit is done when every stack in scope has a scan result and an attached SBOM.
+7. **Attest the build.** Generate the SBOM with `syft` from the same locked tree the build ships — CycloneDX for the security pipeline, SPDX when a contract names it. The scan gates stay on `skill-gate --category sca` and `--category secrets`; only the SBOM comes from `syft`:
+
+   ```sh
+   syft . -o cyclonedx-json
+   syft . -o spdx-json
+   ```
+
+   Write the report: the SBOM path, vulnerability counts by severity, the per-finding outcomes, and the secrets result. The audit is done when every stack in scope has a scan result and an attached SBOM.
 
 See also: [supply-chain risk](references/supply-chain.md).

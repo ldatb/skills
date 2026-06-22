@@ -13,11 +13,11 @@ The grammar, the type-to-section map, the breaking-change rule, the SemVer decis
 
 2. **Decide the version.** Read the commit subjects in the range, then climb the [SemVer ladder](references/conventional-commits.md) to the highest bump any single commit forces: a breaking `!` marker forces a major, a `feat` forces a minor, a `fix` forces a patch. This step is done once the new version string is written down with the one commit that justifies it.
 
-3. **Generate the section.** Run `skill-changelog --version <version> --from <previous-tag> --to HEAD`. The output groups the parsed commits under fixed section titles, with breaking changes in their own block first. This step is done once a section prints with a `## [<version>]` header.
+3. **Generate the section.** Run `skill-changelog --version <version> --date <YYYY-MM-DD> --from <previous-tag> --to HEAD`. The output groups the parsed commits under fixed section titles, with breaking changes in their own block first; `--date` stamps the release date into the header, which the tool omits when the flag is absent. This step is done once a section prints with a `## [<version>] - <YYYY-MM-DD>` header.
 
 4. **Review the groups.** Read the rendered section against the raw range to spot a commit that was dropped. A subject that landed in the wrong group, or vanished, points to a malformed or non-conventional commit subject rather than a tool defect. This step is done once every surviving commit sits under the section its type maps to.
 
-5. **Write the file.** Rerun the same command with `--write CHANGELOG.md` appended to prepend the section above the prior entries. The tool writes atomically and keeps the single top-level title, so the earlier history stays intact below the new block. This step is done once the command prints `wrote CHANGELOG.md`.
+5. **Write the file.** Rerun the same command — `skill-changelog --version <version> --date <YYYY-MM-DD> --from <previous-tag> --to HEAD --write CHANGELOG.md` — to prepend the section above the prior entries. The tool writes atomically and keeps the single top-level title, so the earlier history stays intact below the new block. This step is done once the command prints `wrote CHANGELOG.md`.
 
 6. **Confirm the result.** Open `CHANGELOG.md` and read the top. This step is done once the new version sits at the top of the file with the prior history beneath it.
 

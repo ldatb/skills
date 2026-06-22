@@ -11,7 +11,7 @@ The depth bar, the failure modes, and a worked example live in [references/pm-sy
 
 ## Steps
 
-1. **Define the project record.** Create one project note holding goal (the outcome in one sentence), scope (in and out), the owner, and the current status. The goal names a result a reader can test, not an activity. The step is done when the project note states a testable goal plus an explicit out-of-scope line.
+1. **Define the project record.** Create one project note holding goal (the outcome in one sentence), scope (in and out), the owner, and the current status — `vault.sh capture project "<name>" owner=<owner> company=<company> cadence=weekly` sets those fields at capture through [second-brain-crud](../../obsidian/second-brain-crud/SKILL.md). The goal names a result a reader can test, not an activity. The step is done when the project note states a testable goal plus an explicit out-of-scope line.
 
 2. **Break the goal into milestones and tasks.** Split the goal into 3–7 milestones, each with a date and a done-condition, then split the nearest milestone into tasks that each carry one acceptance criterion. Estimate against past actuals, not hope; mark every dependency and the longest dependent chain (the critical path). The step is done when each near-term task has an acceptance criterion and the critical path is named in the note.
 

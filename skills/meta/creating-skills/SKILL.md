@@ -21,9 +21,11 @@ also the [foundation doctrine](../foundation/SKILL.md), whose rules this skill a
    model-invoked, drafted a description under 500 characters that opens with the job's
    verb and lists "Use when …" triggers.
 
-2. **Scaffold.** Run `make new-skill CATEGORY=<category> NAME=<name>` (which calls
-   `skill-new`), adding `--invocation model` for a model-invoked skill. The scaffolder
-   writes a lint-clean `skills/<category>/<name>/SKILL.md` and registers the skill.
+2. **Scaffold.** For the user-invoked default, run `make new-skill CATEGORY=<category>
+   NAME=<name>` (which calls `skill-new`). For a model-invoked skill, call the scaffolder
+   directly — `skill-new --category <category> --name <name> --invocation model` (or `uv
+   run skill-new ...`) — because the `make` recipe forwards no `--invocation` flag. Either
+   path writes a lint-clean `skills/<category>/<name>/SKILL.md` and registers the skill.
    Completion: the command prints `created skills/<category>/<name>/SKILL.md`, and that
    file is present.
 

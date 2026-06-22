@@ -12,7 +12,8 @@ result in pre-commit, in CI, and on a laptop offline.
 
 ## Rule syntax
 
-One rule per line. The scanner (`scripts/check-policy.sh`) recognizes exactly
+One rule per line. The scanner
+(`skills/engineering/autoguardrails/scripts/check-policy.sh`) recognizes exactly
 three line kinds:
 
 ```
@@ -85,8 +86,9 @@ scanner.
 2. **Write one DENY line.** Add `DENY <regex> -- <message>` to the global
    `POLICY.md` (org-wide) or the repo-local `./POLICY.md` (project-specific). The
    message must tell the author what to do, not merely that they erred.
-3. **Calibrate.** Run `scripts/check-policy.sh` and read every hit. Widen or
-   narrow the regex until a known-bad line is caught and no safe line is flagged.
+3. **Calibrate.** Run `skills/engineering/autoguardrails/scripts/check-policy.sh`
+   and read every hit. Widen or narrow the regex until a known-bad line is caught
+   and no safe line is flagged.
 4. **Prove it red, then green.** Add a deliberate known-bad line, confirm a
    non-zero exit, remove the line, confirm a zero exit.
 

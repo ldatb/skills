@@ -14,9 +14,9 @@ single delete path refuses anything but one file inside the vault root.
 
 ## The note-type taxonomy
 
-Seven types cover personal life, job, and projects. One uniform frontmatter block sits
-on every note (so correlation queries stay simple), and the type adds its own fields and
-heading set on top.
+Eleven types cover personal life, job, projects, and the management surface (clients,
+feedback, 1:1s, companies). One uniform frontmatter block sits on every note (so
+correlation queries stay simple), and the type adds its own fields and heading set on top.
 
 | Type | Captures | Type-specific frontmatter | Headings |
 |------|----------|---------------------------|----------|
@@ -27,17 +27,39 @@ heading set on top.
 | `task` | a discrete unit of work | `status`, `due` | Notes, Related |
 | `decision` | a choice and its reasoning | `date`, `status` | Context, Decision, Consequences, Related |
 | `daily` | one day's running log | `date` | Log, Tasks |
+| `client` | a client relationship and its health | `status`, `company` | Notes, Related |
+| `feedback` | one SBI feedback instance | `date` | Notes, Related |
+| `1on1` | one direct-report 1:1 session | `date` | Notes, Action items, Related |
+| `company` | an organization you track | `industry` | Notes, Related |
 
 Shared frontmatter on every note: `title`, `type`, `created`, `tags`. The `type` value
 also seeds the first tag, so `vault.sh find "tags: [project]"` enumerates one type
-deterministically.
+deterministically. These four shared keys are owned by the template and cannot be set as
+capture fields, which keeps the correlation queries stable.
+
+### Setting fields at capture
+
+`vault.sh capture <type> "<title>" key=value ...` writes each trailing `key=value` as a
+frontmatter field, so a note lands with its custom fields already set — no follow-up edit,
+no hand-typed YAML. The rules the script enforces:
+
+- The key is a simple identifier (`[a-z_]+`); anything else is rejected at the boundary.
+- The value is emitted bare, and wrapped in double quotes when it carries a `:` or `#`
+  (or a quote, backslash, or edge whitespace), so the YAML stays valid.
+- A key matching a type default *replaces* that default, so the field never duplicates —
+  `capture project "Roadmap" owner=lucas` yields a single `owner: lucas`.
+- Sensitivity is a capture field: `capture feedback "SBI for Ada" sensitivity=private`
+  marks the note private at creation, the discipline the management skills rely on.
+- Fields are validated before any file is reserved, so a bad field aborts the capture
+  with no orphan note left behind.
 
 ## The capture-fast principle
 
 A second brain that is slow to write to does not get written to. Friction is the enemy,
 and the antidote is a single command per thought:
 
-- One verb, two arguments: `vault.sh capture <type> "<title>"` returns a ready note path.
+- One verb, two arguments: `vault.sh capture <type> "<title>"` returns a ready note path;
+  optional trailing `key=value` args set frontmatter fields in the same call.
 - The slug is derived from the title by the script, never typed by hand.
 - The filename is reserved collision-free (noclobber `set -C`, the shell's O_EXCL),
   so two notes titled "Sync" never overwrite — the second becomes `sync-2.md`.

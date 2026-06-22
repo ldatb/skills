@@ -15,7 +15,8 @@ patterns, and the failure modes — lives in
 reference before a vault session.
 
 The vault root resolves from `$VAULT`, falling back to `./vault`. Types: `person`,
-`project`, `meeting`, `idea`, `task`, `decision`, `daily`.
+`project`, `meeting`, `idea`, `task`, `decision`, `daily`, `client`, `feedback`,
+`1on1`, `company`.
 
 ## Steps
 
@@ -25,9 +26,15 @@ The vault root resolves from `$VAULT`, falling back to `./vault`. Types: `person
    named.
 
 2. **Capture through the script.** Create a typed note with
-   `scripts/vault.sh capture <type> "<title>"`, which renders uniform frontmatter, derives
-   a safe slug, and reserves a collision-free filename. This step is done once the command
-   prints the new note path.
+   `scripts/vault.sh capture <type> "<title>" [key=value ...]`, which renders uniform
+   frontmatter, derives a safe slug, and reserves a collision-free filename. Each trailing
+   `key=value` argument writes one frontmatter field — the key is a simple identifier
+   (`[a-z_]+`), the value is quoted automatically when it carries a `:` or `#`, and a key
+   matching a type default replaces that default. A field whose key is overridden stays
+   single, so `capture project "Roadmap" owner=lucas` yields one `owner: lucas`. Set
+   sensitivity at capture with `sensitivity=private`. The reserved structural keys
+   `title`, `type`, `created`, and `tags` are set by the template and rejected as fields.
+   This step is done once the command prints the new note path.
 
 3. **Append a log entry.** Add a timestamped bullet under the note's `## Log` section with
    `scripts/vault.sh append <note> "<text>"`. This step is done once the command returns

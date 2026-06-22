@@ -93,6 +93,17 @@ first iteration:
   skipped gate. The gate runs every pass and its result is recorded verbatim. A red gate
   reverts the item to open; it never advances behind a narrowed or skipped check. Eroding
   the gate to make an item pass is the silent-gate-skipping failure mode, and it is banned.
+- **Reset the working tree on a red gate.** Reverting an item to open is a status change;
+  the failed attempt's edits still sit dirty in the working tree. So a red gate also
+  restores that item's changed files to their pre-iteration state from version control
+  before the retry, exactly as the [orchestration](../../subagent-driven-development/references/orchestration.md)
+  re-dispatch loop resets a failed unit's owned files from VCS. The mechanics: the loop
+  runs on its own unshared branch, and on a red gate it restores only that item's scope —
+  `git restore <files>` for the touched paths, or a scoped hard reset of the loop's branch
+  to the pre-iteration commit — so the next attempt starts from a clean tree rather than
+  compounding a half-done edit. Without this reset an autonomous loop accumulates dirty,
+  half-applied changes across retries until the gate can no longer tell which edit is under
+  test. (A full-branch reset spelled out: `git reset --hard <pre-iteration-commit>`.) <!-- skill-lint: allow SK040 -->
 - **No destructive operations.** The loop runs no irreversible command unattended — no
   history rewrite, no recursive delete, no force-push, no schema drop. Destruction routes
   through a guarded helper or is forbidden outright, because no human is watching to catch a
@@ -245,18 +256,22 @@ budget, stall count 0. Another iteration is permitted.
 
 **Gate and write back.** Run `skill-gate --strict`. The gate fails: `src/admin.ts` passed a
 second positional argument the old helper accepted and the new one rejects. Per the
-gate-green guardrail, item 2 stays open, `stall_count` increments to 1, `iteration: 2`, spend
-added. No item closed this round.
+gate-green guardrail, item 2 stays open and `stall_count` increments to 1. Per the
+working-tree-reset guardrail, the loop then restores the file the failed attempt touched —
+`git restore src/admin.ts` on the loop's own branch — so the dirty edit is rolled back and
+the tree is clean again. Record `iteration: 2` and the spend. No item closed this round.
 
-The next iteration re-reads state, sees `stall_count: 1` (below K = 2), and retries item 2 —
-this time dropping the stray argument the gate flagged. That pass closes item 2 and resets the
-stall count. Had a second consecutive iteration also closed nothing, `stall_count` would have
+The next iteration re-reads state, sees `stall_count: 1` (below K = 2), and retries item 2
+from that clean tree — this time writing `fetchUser({ id: adminId })` without the stray
+argument the gate flagged, rather than patching on top of the reverted-but-still-dirty first
+attempt. That pass closes item 2 and resets the stall count. Had a second consecutive iteration also closed nothing, `stall_count` would have
 reached K = 2 and the no-progress detector would have halted the loop, writing
 `termination: { reason: "stall", item: 2 }` for a human to inspect.
 
 The loop continues — re-read, advance, gate, write back — until items 3 and 4 close with the
 gate green. At that point the open set is empty and `skill-gate --strict` exits zero: the
 done-condition holds, the loop writes `termination: { reason: "done" }`, and it stops. Every
-iteration was bounded by the cap, the budget, and the stall detector; no destructive or
-external operation ran; and the state file alone could have resumed the run after any crash —
-which is the whole point of ralph.
+iteration was bounded by the cap, the budget, and the stall detector; every red gate reset
+the failed item's files so no half-done edit survived into the retry; no destructive or
+external operation ran; and the state file plus a clean tree alone could have resumed the run
+after any crash — which is the whole point of ralph.

@@ -49,8 +49,21 @@ Legend: `[x]` done & lint-green · `[~]` in progress · `[ ]` todo · `[!]` bloc
 ## Wave 8 — social ✅
 - [x] social/: social-media-viral (IG + X viral research via Chrome; research+draft only, posting gated)
 
-## Final — stress test ALL skills to a Japanese quality bar; fix; repeat until clean
-- [ ] adversarial stress-test pass (one critic agent per skill) → fix → re-verify
+## Final — stress test ALL skills to a Japanese quality bar ✅ (round 1)
+- [x] Round 1: 6 adversarial critics over all 62 skills. marketing + cloud/obsidian/social: clean.
+      11 blocker/major defects found + fixed + re-verified:
+      - secure-sdlc/supply-chain-audit: SBOM now via `syft` (skill-gate had no SBOM); waivers reframed as a reviewer-checked log (skill-gate doesn't enforce).
+      - autoguardrails: fixed unrunnable script path; real NUL-safe `git ls-files -z`.
+      - docx: fixed crashing `add_style("Caption")` (built-in) → fetch-and-modify.
+      - brandkit: corrected wrong WCAG contrast figures (verified by computation).
+      - ralph: reset working tree from VCS on a red gate before retry.
+      - changelog-gen: `--date` added so the dated header is reproducible.
+      - creating-skills: `skill-new --invocation model` directly (Makefile passes no flag).
+      - management trio + vault.sh: extended capture with key=value + types (client/feedback/1on1/company); fixed broken cross-ref.
+- [ ] Round 2 (optional): re-run critics; expect few/none given round 1 + deterministic gates.
+
+## Remaining polish
+- [ ] README/CONTRIBUTING: reflect full library (62 skills, 11 categories) + "install ldatb skills" flow.
 
 ## Notes
 - Every SKILL.md must pass `skill-lint --strict`; every cross-link must resolve (`skill-docs`).
