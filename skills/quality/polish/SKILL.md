@@ -16,9 +16,10 @@ forced onto the small.
 
 ## Steps
 
-1. **Confirm readiness.** State that the feature is functionally complete and its tests
-   pass. Readiness is confirmed when behavior is done and the suite is green; an
-   unfinished feature exits here, because polish on incomplete work is premature.
+1. **Confirm readiness.** State that the feature is functionally complete, then run the
+   test suite (`skill-gate --category test`, or the project's test command) to confirm it.
+   Readiness is confirmed when the suite exits zero; an unfinished feature exits here,
+   because polish on incomplete work is premature.
 
 2. **Establish the reference.** Locate the design system, style guide, or token
    definitions; absent one, name the convention visible in neighboring screens. This
@@ -30,8 +31,10 @@ forced onto the small.
    stutters is noted, before any inspector opens.
 
 4. **Sweep every dimension.** Take the checklist sections one at a time — visual, copy,
-   interaction, edge cases, consistency, accessibility. The sweep is done when each of
-   the six sections has been worked against the screen and yields a verdict.
+   interaction, edge cases, consistency, accessibility. Run the accessibility section
+   through a deterministic checker (`axe`, Lighthouse, or a contrast check) rather than the
+   eye. The sweep is done when each of the six sections has a verdict and the accessibility
+   checker exits clean.
 
 5. **Log each cut as a line item.** Record every finding with its location, the fix,
    and a **functional** or **cosmetic** label. Logging is done when each cut found sits

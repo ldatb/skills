@@ -54,10 +54,12 @@ building:
 
 3. **Build hierarchy and verify contrast.** Rank elements by importance and express that
    rank through size, weight, color, and whitespace rather than borders, giving the surface
-   exactly one primary action; then compute every text-on-background pair, including text on
-   an accent. Done when the primary action is the most prominent element, no separation
-   relies on a border that whitespace or a tint could carry (outside a stated brutalist
-   system), and every pair measures WCAG AA or higher (4.5:1 body, 3:1 large).
+   exactly one primary action; then check every text-on-background pair, including text on
+   an accent, with a contrast checker (`axe`, Lighthouse, or brandkit's `tokens.py contrast
+   <fg> <bg>`) rather than the eye. Done when the primary action is the most prominent
+   element, no separation relies on a border that whitespace or a tint could carry (outside a
+   stated brutalist system), and the checker reports every pair at WCAG AA or higher (4.5:1
+   body, 3:1 large).
 
 4. **Complete the UX — states, forms, feedback, navigation.** Inventory the loading, empty,
    error, partial, and success state of every data view; give each form persistent labels,
