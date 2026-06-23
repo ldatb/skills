@@ -253,6 +253,7 @@ This generator defines the full style sheet first, then builds one cover-plus-se
 from docx import Document
 from docx.shared import Pt, Inches, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.style import WD_STYLE_TYPE
 
 ACCENT = RGBColor(0x0B, 0x5C, 0x8A)   # dark accent — white text on it clears AA
 INK    = RGBColor(0x1A, 0x1A, 0x1A)   # near-black body — ~13:1 on white
@@ -265,6 +266,13 @@ def define_styles(doc):
     normal.font.color.rgb = INK
     normal.paragraph_format.line_spacing = 1.4
     normal.paragraph_format.space_after = Pt(8)
+
+    body = doc.styles.add_style("Body", WD_STYLE_TYPE.PARAGRAPH)   # new — add, never fetch
+    body.font.name = "Georgia"
+    body.font.size = Pt(11)
+    body.font.color.rgb = INK
+    body.paragraph_format.line_spacing = 1.4
+    body.paragraph_format.space_after = Pt(8)
 
     for name, size, before in (("Heading 1", 20, 18), ("Heading 2", 16, 12)):
         h = doc.styles[name]

@@ -123,7 +123,7 @@ skills/                 # 45 skills, by domain (each with a generated README.md)
   productivity/         # brainstorm, caveman, grill-me, handoff, teach
 tools/                  # the deterministic toolchain (Python): skill_lint, skill_new, skill_gate,
                         # skill_changelog, skill_docs, skill_update, skill_config, skill_readme, skillkit
-scripts/                # install.sh, git-commit.sh
+scripts/                # install.sh
 .claude-plugin/         # marketplace.json + plugin.json
 .github/workflows/      # CI: determinism gate, docs, READMEs, tests, ruff, Semgrep
 ```

@@ -13,7 +13,7 @@ Push the work down the determinism ladder: a python-pptx script owns geometry, c
 
 1. **Define audience and narrative.** Name the audience, the single takeaway, and the slide-by-slide arc (one idea per slide) before opening an editor. The arc is complete when each planned slide maps to one archetype from the reference — title, section, content, data, quote, or closing — and no slide carries two ideas.
 
-2. **Set the theme and tokens.** Pick the deck dimension (16:9 = 13.333 x 7.5 in), one type ramp (one display face, one body face, ≤2 families total), a restrained palette (one neutral ramp, one brand accent, AA-rated text pairs), and an 8pt-based spacing grid, drawing values from `../../design/brandkit/SKILL.md` and `../../design/web-design-guidelines/SKILL.md`. The theme holds when every token is a named constant in the script, every text pair clears 4.5:1 (3:1 for large text), and the family count is ≤2.
+2. **Set the theme and tokens.** Pick the deck dimension (16:9 = 13.333 x 7.5 in), one type ramp (one display face, one body face, ≤2 families total), a restrained palette (one neutral ramp, one brand accent, AA-rated text pairs), and an 8pt-based spacing grid, drawing values from `../../design/brandkit/SKILL.md` and `../../design/frontend-design/SKILL.md`. The theme holds when every token is a named constant in the script, every text pair clears 4.5:1 (3:1 for large text), and the family count is ≤2.
 
 3. **Choose an archetype per slide.** Map each slide from step 1 to a layout spec in the reference, fixing its margins, title position, and content region from the spacing grid. The mapping is done when each slide names its archetype and pulls margins and positions from grid constants, not eyeballed inches.
 

@@ -9,7 +9,7 @@ What overdrive changes, when it is warranted versus wasteful, the cost calculus,
 
 ## Steps
 
-1. **Justify the spend.** Name why this task clears the overdrive bar: high stakes, irreversibility, a security or financial blast radius, or flagship visibility. Record the rough cost in extra passes against that payoff. The step is done when one written sentence states the stake and a second confirms the payoff exceeds the cost, or when that test fails and the default pass is chosen instead.
+1. **Justify the spend.** Name why this task clears the overdrive bar: high stakes, irreversibility, a security or financial blast radius, or flagship visibility. Record the rough cost in extra passes against that payoff. The step is done once two written sentences name the stake and confirm the payoff beats the cost. A failed payoff test instead selects the default pass.
 
 2. **Generate independent approaches.** Produce two or three genuinely distinct solutions, not one solution with cosmetic variants, each with its trade-offs stated. Score them against the stated stake. The step is done when the candidate count is at least two and a one-line rationale names the chosen approach over the rejected ones.
 

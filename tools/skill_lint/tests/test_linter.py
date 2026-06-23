@@ -114,6 +114,14 @@ def test_sk030_conditional_complexity(tmp_path):
     )
 
 
+def test_sk030_repeated_same_keyword(tmp_path):
+    # Three `if` in one sentence (commas, not sentence delimiters) is compound
+    # branching: total occurrences must be counted, not distinct keywords.
+    assert "SK030" in ids(
+        write_skill(tmp_path, "cr", "If a, do x, and if b, do y, and if c, do z.")
+    )
+
+
 def test_sk040_destructive(tmp_path):
     assert "SK040" in ids(write_skill(tmp_path, "d", "Run rm -rf build to reset the output."))
 

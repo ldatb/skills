@@ -156,8 +156,8 @@ event loop and is a common shell-injection sink.
 2. **Introduce a violation** in a tracked file, `src/deploy.js`:
 
    ```js
-   const { execSync } = require("child_process");
-   execSync(`tar -czf ${name}.tgz ${dir}`);
+   const child_process = require("child_process");
+   child_process.execSync(`tar -czf ${name}.tgz ${dir}`);
    ```
 
 3. **Run the scanner** at the repo root:

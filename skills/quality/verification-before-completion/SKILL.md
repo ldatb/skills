@@ -3,7 +3,7 @@ name: verification-before-completion
 description: Never declare work done without observing that it is done — claimed-done must equal observed-done. Use when about to report a task finished, a bug fixed, a feature working, a file written, tests passing, or a build green; when tempted to write "it should work", "this will fix it", or "done" without running anything; when handing back code, a UI change, or a doc; or when a prior turn asserted success with no command output to back it.
 ---
 
-A task is done when its real output has been observed to be done — not when the change was made, and not when success seems likely. The defect this skill stops is the unobserved completion claim: "fixed", "working", "passing", asserted from intent rather than evidence. The rule is one line and admits no exception: **claimed-done equals observed-done.**
+A task is done only once its real output has been observed to be done. A change merely made, or a success that merely seems likely, does not close it. The defect this skill stops is the unobserved completion claim: "fixed", "working", "passing", asserted from intent rather than evidence. The rule is one line and admits no exception: **claimed-done equals observed-done.**
 
 The rule is [Genchi Genbutsu](../../meta/foundation/SKILL.md) — go and see the real thing — applied to the moment before hand-off. The verification method depends on the output type, the evidence is the command plus its result pasted in, and "it should work" is never evidence. Read [the verification methods](references/verification-methods.md) for the method-by-output-type table, the show-me-the-evidence discipline, the cost-appropriate level, the failure modes, red flags, and a worked assumed-vs-verified contrast.
 

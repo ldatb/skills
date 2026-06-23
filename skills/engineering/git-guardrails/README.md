@@ -20,6 +20,10 @@
 4. Guard destruction.
 5. Push with care.
 
+## Scripts
+
+- `scripts/git-commit.sh`
+
 ## Learn more
 
 - [SKILL.md](SKILL.md) — the full procedure the agent follows.

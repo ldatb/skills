@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 _LINK = re.compile(r"\]\(([^)]+)\)")
+_FENCE_RE = re.compile(r"^\s*(```|~~~)")
 
 
 @dataclass(frozen=True)
@@ -17,9 +18,15 @@ class BrokenLink:
 
 
 def find_links(text: str) -> list[tuple[int, str]]:
-    """Return (line_number, target) for every Markdown link or image target."""
+    """Return (line_number, target) for every Markdown link outside fenced code blocks."""
     out: list[tuple[int, str]] = []
+    in_code = False
     for i, line in enumerate(text.splitlines(), start=1):
+        if _FENCE_RE.match(line):
+            in_code = not in_code
+            continue
+        if in_code:
+            continue
         for m in _LINK.finditer(line):
             out.append((i, m.group(1).strip()))
     return out

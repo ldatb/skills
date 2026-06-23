@@ -16,8 +16,8 @@ concept and the per-cloud service is named in parentheses.
 ## The Well-Architected themes — the shared vocabulary
 
 All three clouds publish a "Well-Architected" framework (AWS Well-Architected, Azure
-Well-Architected, Google Cloud Architecture Framework), and the four cross-cloud themes are
-the same. Read a design against all four, because optimizing one alone bends the others:
+Well-Architected, Google Cloud Architecture Framework), and the five cross-cloud themes are
+the same. Read a design against all five, because optimizing one alone bends the others:
 
 - **Security.** Least-privilege identity, encryption everywhere, network segmentation, audit
   logging. This theme is the one the compliance regimes formalize, so the rest of this page

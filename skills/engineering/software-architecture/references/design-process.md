@@ -209,7 +209,7 @@ without harm.
 
 - Writes: 100M/month ≈ 40 writes/sec average, ~400/sec at peak.
 - Reads: 100:1 ratio ≈ 4,000 reads/sec average, ~40,000/sec at peak.
-- Storage: ~500 bytes/record × 100M/month × 5 years ≈ ~30 TB. Growth dominates; plan
+- Storage: ~5 KB/record × 100M/month × 5 years ≈ ~30 TB. Growth dominates; plan
   for horizontal storage from day one.
 
 The read volume and the 30 TB store rule out a single relational box serving reads

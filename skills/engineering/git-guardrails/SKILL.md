@@ -11,7 +11,7 @@ Treat git history as shared state: a wrong push is felt by everyone. Commit thro
 
 2. **Stage with intent.** Stage only the files the change touches, then read `git diff --staged`. The step is done once the staged set matches the change and nothing unrelated is included.
 
-3. **Commit deterministically.** Run `scripts/git-commit.sh <type> <scope> <subject>` so the message is a validated conventional commit. The step is done once the command prints the committed header.
+3. **Commit deterministically.** Run `skills/engineering/git-guardrails/scripts/git-commit.sh <type> <scope> <subject>` so the message is a validated conventional commit. The step is done once the command prints the committed header.
 
 4. **Guard destruction.** A history rewrite or a working-tree discard runs only with explicit approval, and only on an unshared branch. See [the git rules](references/git-rules.md) for the operations that demand a stop.
 

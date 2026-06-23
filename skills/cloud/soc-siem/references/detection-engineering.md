@@ -122,7 +122,7 @@ user — the brute-force-then-takeover sequence:
 ```
 # Wazuh-style correlation (illustrative)
 <rule id="100200" level="10" frequency="8" timeframe="120">
-  <if_matched_sid>5760</if_matched_sid>   <!-- 5760 = sshd failed password -->
+  <if_matched_sid>5716</if_matched_sid>   <!-- 5716 = sshd failed password -->
   <same_source_ip />
   <description>SSH brute force: 8+ failures from one source in 120s</description>
   <mitre><id>T1110</id></mitre>

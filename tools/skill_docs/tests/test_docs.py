@@ -33,6 +33,15 @@ def test_check_file_anchor_on_existing_is_ok(tmp_path):
     assert check_file(doc) == []
 
 
+def test_check_file_ignores_links_in_code_fences(tmp_path):
+    doc = tmp_path / "doc.md"
+    doc.write_text(
+        "```bash\n# example: [fenced](does-not-exist.md)\n```\n[real](also-missing.md)\n"
+    )
+    broken = check_file(doc)
+    assert [b.target for b in broken] == ["also-missing.md"]
+
+
 def test_cli_exit_codes(tmp_path):
     (tmp_path / "exists.md").write_text("ok")
     good = tmp_path / "good.md"

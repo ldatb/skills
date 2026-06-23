@@ -20,7 +20,7 @@ def check_conditionals(doc: SkillDoc, rules: dict) -> list[Finding]:
     out: list[Finding] = []
     for ln in doc.prose_lines:
         for sentence in sentences(ln.text.lower()):
-            count = sum(1 for kw in keywords if kw.search(sentence))
+            count = sum(len(kw.findall(sentence)) for kw in keywords)
             if count > limit and not doc.is_suppressed(ln.number, "SK030"):
                 out.append(make_finding(rules, "SK030", doc, ln.number))
                 break

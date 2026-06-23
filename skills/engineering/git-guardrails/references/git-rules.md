@@ -1,7 +1,7 @@
 # Git rules
 
 Git history is shared state. These rules keep a change from corrupting it. The
-deterministic commit helper (`scripts/git-commit.sh`) handles message format; this page
+deterministic commit helper (`skills/engineering/git-guardrails/scripts/git-commit.sh`) handles message format; this page
 covers the operations a human must approve and how to recover when one goes wrong.
 
 ## Operations that demand a stop
@@ -26,7 +26,7 @@ without a dry run.
 ## Commit discipline
 
 - One logical change per commit. A commit that does two things cannot be reverted cleanly.
-- Conventional format via `scripts/git-commit.sh <type> <scope> <subject>` — the script
+- Conventional format via `skills/engineering/git-guardrails/scripts/git-commit.sh <type> <scope> <subject>` — the script
   validates the type, rejects an empty or period-terminated subject, and caps the subject
   at 72 characters. Run `git-commit.sh --selftest` to confirm the validator.
 - The body explains *why*, not *what* — the diff already shows what changed.
