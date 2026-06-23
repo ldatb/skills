@@ -18,12 +18,16 @@
 
 ## What it does
 
-1. State the goal and pick the durable file.
-2. Capture the current state against the goal.
-3. Split done from remaining, and make each remaining item a concrete action.
-4. Record the load-bearing context: files, decisions, and gotchas.
-5. Write how to verify and name any blockers.
+1. Stamp the document structure with the script.
+2. Fill the Summary with the goal.
+3. Fill Current state against the goal.
+4. Fill What's done, then make each item under What's left a concrete action.
+5. Fill the run, risk, file, and contact sections.
 6. Confirm resumability against the failure modes.
+
+## Scripts
+
+- `scripts/handoff.sh`
 
 ## Learn more
 

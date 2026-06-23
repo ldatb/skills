@@ -22,12 +22,16 @@
 ## What it does
 
 1. Define the client record and instrument the signals.
-2. Score the health red, yellow, or green.
+2. Score the health with the rubric script, not by eye.
 3. Run the cadence at the intensity the band sets.
 4. Act on a yellow or red band.
 5. Capture feedback and harvest advocacy.
 6. Draft client messages for approval, never send.
 7. Record and correlate in the vault.
+
+## Scripts
+
+- `scripts/health-score.py`
 
 ## Learn more
 

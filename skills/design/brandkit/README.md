@@ -27,12 +27,19 @@
 ## What it does
 
 1. Pin the foundations.
-2. Define the color system by role.
-3. Define the type, spacing, radius, and elevation scales.
-4. Set logo rules, iconography, and imagery direction.
-5. Name the tokens for code.
-6. Check consistency across surfaces, then sweep for failure modes.
-7. Report against the criteria.
+2. Choose the color system by role.
+3. Choose the type, spacing, radius, and elevation scales.
+4. Write the decisions into `brand.json`.
+5. Render the tokens with the script.
+6. Verify every text pair against AA with the script — never by eye.
+7. Set logo rules, iconography, and imagery direction.
+8. Name the tokens for code.
+9. Check consistency across surfaces, then sweep for failure modes.
+10. Report against the criteria.
+
+## Scripts
+
+- `scripts/tokens.py`
 
 ## Learn more
 

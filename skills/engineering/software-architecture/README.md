@@ -26,7 +26,12 @@
 4. Place it on infrastructure and define the contracts.
 5. Analyze trade-offs against patterns.
 6. Check the failure modes.
-7. Emit the diagrams and the ADR.
+7. Emit the diagrams.
+8. Scaffold the ADR with the script, then write its prose.
+
+## Scripts
+
+- `scripts/adr.sh`
 
 ## Learn more
 

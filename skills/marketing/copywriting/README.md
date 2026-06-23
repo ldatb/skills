@@ -29,8 +29,13 @@
 3. Draft against the beats, honestly.
 4. Cut to the rule of one.
 5. Convert features to benefits, then prove and verify.
-6. Sharpen the CTA and clear the ethics gate.
-7. Read aloud against voice and the contract.
+6. Run the mechanical lint and fix every finding.
+7. Sharpen the CTA and clear the ethics gate.
+8. Read aloud against voice and the contract.
+
+## Scripts
+
+- `scripts/copy-lint.py`
 
 ## Learn more
 

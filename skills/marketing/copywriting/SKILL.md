@@ -21,9 +21,18 @@ Three references carry the depth. Read [frameworks.md](references/frameworks.md)
 
 5. **Convert features to benefits, then prove and verify.** Rewrite each feature as the outcome the reader gets, attach a specific proof to every claim — a number, a named result, a testimonial, a guarantee — and confirm each number, deadline, and testimonial against a real source. This step is done when no claim stands without evidence, no vague intensifier ("best", "powerful", "seamless") survives without a concrete fact, and any claim that fails the truth test is cut.
 
-6. **Sharpen the CTA and clear the ethics gate.** Rewrite the call-to-action as a specific, first-person, friction-named ask, test the whole draft against the forbidden dark patterns and the three ethics tests (transparency, truth, interest) in [persuasion.md](references/persuasion.md), and run the red-flags checklist in [frameworks.md](references/frameworks.md). This step is done when the CTA states exactly what happens next, every dark pattern is marked absent, the three tests pass, and zero red flags remain.
+6. **Run the mechanical lint and fix every finding.** Save the draft to a file, then run `python scripts/copy-lint.py check <draft>` — adding `--platform <p>` for an `x`, `instagram`, or `linkedin` post and `--cta` once this copy must carry a call-to-action. The script flags hype and weasel words, sentences past 30 words, likely passive voice, a missing call-to-action verb, and any over-limit length, each located by line and column. A nonzero exit lists findings the agent rewrites by judgment; clean copy exits zero with one line. This step is done when `scripts/copy-lint.py check` exits zero on the draft.
 
-7. **Read aloud against voice and the contract.** Read the final copy aloud once for the founder's voice and rhythm, flatten any line that sounds like a corporate brochure, then set the result beside the step-1 contract. This step is done when every sentence sounds like the founder speaking, no jargon filler remains, and the claim, reader, and action survive unchanged.
+7. **Sharpen the CTA and clear the ethics gate.** Rewrite the call-to-action as a specific, first-person, friction-named ask, test the whole draft against the forbidden dark patterns and the three ethics tests (transparency, truth, interest) in [persuasion.md](references/persuasion.md), and run the red-flags checklist in [frameworks.md](references/frameworks.md). This step is done when the CTA states exactly what happens next, every dark pattern is marked absent, the three tests pass, and zero red flags remain.
+
+8. **Read aloud against voice and the contract.** Read the final copy aloud once for the founder's voice and rhythm, flatten any line that sounds like a corporate brochure, then set the result beside the step-1 contract. This step is done when every sentence sounds like the founder speaking, no jargon filler remains, and the claim, reader, and action survive unchanged.
+
+## Scripts
+
+The agent writes the copy and judges the message; the script enforces the mechanical rules a prose checklist cannot enforce reliably.
+
+- `scripts/copy-lint.py check <draft>` — flag hype and weasel words, sentences past 30 words, likely passive voice, a missing call-to-action verb (under `--cta`), and an over-limit length (under `--platform {x,instagram,linkedin}`). Reads stdin when no file is given. Exits zero on clean copy, exits nonzero with located findings otherwise, and exits 2 on a missing file.
+- `scripts/copy-lint.py --selftest` — assert the rules against fixtures; prints `copy-lint selftest: ok` and exits zero.
 
 See also: [persuasion.md](references/persuasion.md) for the ethics line and the dark patterns this skill refuses to emit.
 

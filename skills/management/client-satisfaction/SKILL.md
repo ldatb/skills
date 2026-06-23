@@ -26,11 +26,16 @@ Work the reference for the depth behind each step: [client health](references/cl
    `vault.sh capture client "<name>" company="<company>"`. This step is done once each of
    the five signals has a baseline and a current reading, not a single revenue number.
 
-2. **Score the health red, yellow, or green.** Weight the five signals, sum them, and
-   bucket the client into exactly one band — green for five steady signals, yellow for
-   one tripped signal, red for two tripped or one severe. The band is the routing key for
-   every action below, so a misread band runs the wrong play. This step is done once
-   the client carries one health band backed by the specific signal readings behind it.
+2. **Score the health with the rubric script, not by eye.** Judge each signal onto its
+   fixed scale and write the readings to an `inputs.json` of the shape
+   `{"factors": {"usage": 0-5, "sentiment": 0-5, "payment": 0-5, "support_load": 0-5,
+   "nps": -100..100, "engagement": 0-5}}`. Run `scripts/health-score.py score inputs.json`
+   to compute the 0-100 score and its red/amber/green band from the constant weighted
+   rubric — the number comes from the script, never from the agent's judgment of the
+   total. The band is the routing key for the actions below, so a misread band runs the
+   wrong play. The script's amber band is the yellow band the steps below route on —
+   the two names denote one middle state. This step is done once the script has printed
+   one score, its per-factor contributions, and one RAG band on a zero exit.
 
 3. **Run the cadence at the intensity the band sets.** Hold the standing rhythm for a
    green client — regular check-ins plus the quarterly business review — and add an
@@ -64,6 +69,16 @@ Work the reference for the depth behind each step: [client health](references/cl
    than by hand. Read the health log beside the linked project and commitment notes so a
    dip lines up with its cause and the next quarter routes on evidence. This step is done
    once the current assessment is logged, linked, and read against its driver.
+
+## Scripts
+
+The agent judges the signals; the script computes the score. A run of `--selftest`
+builds fixtures, asserts the rubric, and exits 0:
+
+- `scripts/health-score.py` — read an `inputs.json` of judged factors, normalize each
+  against its fixed range, apply the constant weighted rubric, and print the 0-100
+  score, the per-factor contributions, and the red/amber/green band. An out-of-range
+  or missing factor is rejected with a clear message and a nonzero exit.
 
 ## Done when
 

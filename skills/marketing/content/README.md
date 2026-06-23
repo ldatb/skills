@@ -26,10 +26,14 @@
 1. Frame the audience, the offer, and the job.
 2. Choose the lever per piece.
 3. Write the hook and the body on the shared spine.
-4. Fit the format to the platform.
+4. Fit the format to the platform, then gate the fit with the script.
 5. Plan cadence or the test.
 6. Repurpose one idea across formats.
 7. Screen against the failure modes and the consent line.
+
+## Scripts
+
+- `scripts/content-lint.py`
 
 ## Learn more
 

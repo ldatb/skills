@@ -7,7 +7,7 @@ Design the system the way a tech lead does: let the dominant quality attributes 
 
 A design is a hypothesis under constraints. State the constraints, rank the attributes, sketch the smallest structure that satisfies them (on-premise or on a cloud), name what the structure costs, then emit the [C4 diagrams](references/diagrams-c4-mermaid.md) and the [ADR](references/adr-and-docs.md) as the deliverables.
 
-The depth bar across the seven steps is [the design process](references/design-process.md). Cloud-specific moves live in [cloud architecture](references/cloud-architecture.md); the two output formats live in [C4 diagrams](references/diagrams-c4-mermaid.md) and [ADR and docs](references/adr-and-docs.md).
+The depth bar across the eight steps is [the design process](references/design-process.md). Cloud-specific moves live in [cloud architecture](references/cloud-architecture.md); the two output formats live in [C4 diagrams](references/diagrams-c4-mermaid.md) and [ADR and docs](references/adr-and-docs.md).
 
 ## Steps
 
@@ -23,7 +23,15 @@ The depth bar across the seven steps is [the design process](references/design-p
 
 6. **Check the failure modes.** Test the design against the [system-design failure modes and red flags](references/design-process.md#failure-modes) and, for a cloud target, the [cloud red flags](references/cloud-architecture.md#failure-modes-and-red-flags): big design up front, resume-driven architecture, ignored NFRs, missing trade-off analysis, accidental distributed monolith, single-AZ production, click-ops. The check holds once each listed red flag is marked absent or recorded as an accepted risk with a named owner.
 
-7. **Emit the diagrams and the ADR.** Produce the [C4 diagrams](references/diagrams-c4-mermaid.md) (System Context, then Container, then Component on the contested container) plus a sequence or ER diagram where a flow or schema is load-bearing, all in fenced `mermaid` blocks; then record the central decision as an [ADR](references/adr-and-docs.md#the-adr-template) and write the [one-page design doc](references/adr-and-docs.md#the-design-doc). The work is done once the System Context and Container diagrams both render and an ADR with at least one rejected alternative and one named negative consequence exists.
+7. **Emit the diagrams.** Produce the [C4 diagrams](references/diagrams-c4-mermaid.md) (System Context, then Container, then Component on the contested container) plus a sequence or ER diagram where a flow or schema is load-bearing, all in fenced `mermaid` blocks. The step is done once the System Context and Container diagrams both render.
+
+8. **Scaffold the ADR with the script, then write its prose.** Run `scripts/adr.sh new "<decision title>"` to create the next ADR file — the script owns the sequential number, the template, and the collision-free path, so the agent never hand-numbers an ADR nor hand-rolls its filename. Fill the generated Context, Decision, Consequences, and Alternatives sections with the reasoning from steps 2 and 5; the [ADR guide](references/adr-and-docs.md#the-adr-template) explains each field. The step is done once the created file carries at least one rejected alternative and one named negative consequence. Then write the [one-page design doc](references/adr-and-docs.md#the-design-doc) linking the ADR.
+
+## Scripts
+
+`scripts/adr.sh` owns the deterministic shell of an ADR so the agent spends its judgment only on the reasoning. The script reserves the sequential number from the highest existing ADR, stamps the section template, derives the slug, and writes a collision-free `ADR-NNNN-<slug>.md` without overwriting any file. The repo's selftest gate covers it via `--selftest`.
+
+- `new "<title>" [dir]` — create the next `ADR-NNNN-<slug>.md` (default dir `docs/adr`) and print its path; a missing title fails with usage and exit 2.
 
 ## See also
 
