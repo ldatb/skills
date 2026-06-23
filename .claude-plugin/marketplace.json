@@ -13,7 +13,6 @@
       "name": "ldatb-skills",
       "source": "./",
       "description": "Determinism-first skills: appsec, second brain, marketing, design, and the toolchain that enforces them.",
-      "version": "0.1.0",
       "author": {
         "name": "Lucas de Ataides",
         "email": "lucasatab@gmail.com"
