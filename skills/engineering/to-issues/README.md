@@ -18,10 +18,15 @@
 
 1. Gather the source.
 2. Identify the discrete work.
-3. Draft each issue against the anatomy.
+3. Draft each issue into the spec.
 4. Split the oversized.
 5. Label and link.
-6. Confirm, then create on approval.
+6. Validate the spec deterministically.
+7. Confirm, then create through the script.
+
+## Scripts
+
+- `scripts/to-issues.py`
 
 ## Learn more
 
