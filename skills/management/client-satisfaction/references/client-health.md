@@ -219,7 +219,7 @@ A relationship managed from memory is a relationship that resets every time the
 founder's attention moves. The record is what makes the health score a trend rather
 than a feeling, so every signal, score, and intervention lands in the second brain.
 Note creation, linking, and updates are delegated to
-[second-brain-crud](../../../obsidian/second-brain-crud/SKILL.md) — the satisfaction
+[second-brain](../../../obsidian/second-brain/SKILL.md) — the satisfaction
 work decides *what* to record and the CRUD skill owns *how* the note is written, so
 the file operation stays deterministic.
 
@@ -330,7 +330,7 @@ continued slide escalates the client to red and moves the renewal conversation f
 as an explicit save.
 
 **Record.** The yellow reading, the two tripped signals, and the diagnosed driver are
-written to the health log via [second-brain-crud](../../../obsidian/second-brain-crud/SKILL.md),
+written to the health log via [second-brain](../../../obsidian/second-brain/SKILL.md),
 the client note is linked to the renewal commitment and the new stakeholder's people
 note, and the overdue-QBR cause is folded back into the cadence so a lapsed QBR fires a
 signal on its own next quarter. The vault now carries the trend, so the next dip routes

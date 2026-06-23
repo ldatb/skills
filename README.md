@@ -33,19 +33,19 @@ applied to agent skills. The full doctrine lives in
 
 ## Install
 
-Tell any Claude Code agent with this repo available: **"install ldatb skills"** — the
-[`setup`](skills/meta/setup/SKILL.md) skill runs the install. Or do it by hand (requires
-[uv](https://docs.astral.sh/uv/)):
+1. the CLIs the skills call (skill-lint, skill-gate, skill-changelog, skill-docs, skill-update)
 
-```bash
-# 1. the CLIs the skills call (skill-lint, skill-gate, skill-changelog, skill-docs, skill-update)
-git clone https://github.com/ldatb/skills.git && cd skills
-./scripts/install.sh                       # uv tool install from the clone; re-run to update
+  ```bash
+  git clone https://github.com/ldatb/skills.git && cd skills
+  ./scripts/install.sh                       # uv tool install from the clone; re-run to update
+  ```
 
-# 2. the skills, as a Claude Code plugin
-/plugin marketplace add ldatb/skills
-/plugin install ldatb-skills@ldatb-skills
-```
+2. the skills, as a Claude Code plugin
+
+  ```bash
+  /plugin marketplace add ldatb/skills
+  /plugin install ldatb-skills@ldatb-skills
+  ```
 
 `skill-update` reports when a newer tagged release exists.
 

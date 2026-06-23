@@ -7,7 +7,7 @@ brain, kept deliberately light. The vault is the point — a job project and a p
 live in the same graph, so people, companies, and commitments correlate across both.
 
 This reference sets the depth bar. Note CRUD — creating notes, writing frontmatter, linking,
-querying — belongs to [second-brain-crud](../../../obsidian/second-brain-crud/SKILL.md). This
+querying — belongs to [second-brain](../../../obsidian/second-brain/SKILL.md). This
 skill owns judgment: what the record must hold and when its state changes.
 
 The sections are ordered by weight. A project can have an immaculate task board and still be
@@ -79,7 +79,7 @@ risk; it stops being visible. Review open risks every cadence — a stale risk l
 
 **Decisions.** A material decision — an architecture choice, a scope cut, a vendor pick —
 goes in its own decision note, linked from the project via
-[second-brain-crud](../../../obsidian/second-brain-crud/SKILL.md). The decision note records
+[second-brain](../../../obsidian/second-brain/SKILL.md). The decision note records
 the context, the options weighed, the choice, and the consequence accepted. An untracked
 decision gets relitigated; the log is what lets the project answer "why did we do it this way"
 six months on.
@@ -123,7 +123,7 @@ reader; a cadence so heavy the update gets skipped.
 
 The reason the record lives in the second brain rather than a standalone tracker: correlation.
 Link the project to the people on it, the company or client it serves, and the commitments it
-satisfies, all through [second-brain-crud](../../../obsidian/second-brain-crud/SKILL.md). Once
+satisfies, all through [second-brain](../../../obsidian/second-brain/SKILL.md). Once
 linked, a query across the vault answers questions a flat tracker cannot — what is this person
 on the hook for, what does this client have in flight, which commitments has this quarter's
 work actually advanced. A job project and a personal project in the same graph let the founder
@@ -151,7 +151,7 @@ projects meant to deliver them.
 ### Setting up the project record
 
 A founder starts a project to ship a paid waitlist for a side product. The project note,
-created via [second-brain-crud](../../../obsidian/second-brain-crud/SKILL.md):
+created via [second-brain](../../../obsidian/second-brain/SKILL.md):
 
 ```markdown
 ---

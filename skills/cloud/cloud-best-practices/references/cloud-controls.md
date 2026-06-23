@@ -275,5 +275,5 @@ and the captured evidence are the audit.
   and rollback for the IaC changes that implement these controls.
 - [secure-sdlc](../../../engineering/secure-sdlc/SKILL.md) — the gate order the compliance
   scans join.
-- [supply-chain](../../../engineering/supply-chain-audit/references/supply-chain.md) — the
+- [supply-chain](../../../engineering/secure-sdlc/references/supply-chain.md) — the
   same evidence-and-triage discipline applied to the dependency tree.

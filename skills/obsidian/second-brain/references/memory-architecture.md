@@ -1,16 +1,19 @@
-# Vault architecture
+# Memory architecture
 
-The vault is a durable, source-backed memory layer for an LLM agent: a folder of
-plain Markdown notes that opens in Obsidian as an ordinary vault and reads as a
-clean knowledge base for a human. The compiler's job is to turn raw sources
-(chat exports, emails, connector output, documents) into that knowledge base
-without inventing facts and without losing the trail back to the source.
+The shared model under all four capabilities — capture, compile, retrieve,
+maintain. A second brain is a durable, source-backed memory layer for an
+agent/founder: a folder of plain Markdown notes that opens in Obsidian as an
+ordinary vault and reads as a clean knowledge base for a human. Capture writes to
+it fast, the compiler builds it from raw sources without inventing facts,
+retrieval reads it back as connected context, and the maintenance loop keeps it
+current. This page defines the four memory types, the note formats, the
+frontmatter contract, and how retrieval traverses the result.
 
-This page defines the memory model, the note formats, the redaction policy, and
-the ingestion tiers. The compilation process that produces them is in
-[compiler-process.md](compiler-process.md). The doctrine these choices inherit —
-predictability over cleverness — is the [foundation](../../../meta/foundation/SKILL.md),
-and the review depth bar is [code-review](../../../engineering/code-review/SKILL.md).
+The doctrine these choices inherit — predictability over cleverness, a script
+over freehand judgment — is the [foundation](../../../meta/foundation/SKILL.md).
+The review depth bar is [code-review](../../../engineering/code-review/SKILL.md):
+judge the vault against what it must deliver (fast recall of connected context),
+not only whether each note is individually tidy.
 
 ## The four memory types
 
@@ -24,8 +27,8 @@ evidence for both:
    ("how we cut a release") and Preferences ("Lucas wants negative conclusions
    stated first"). These steer the agent's behavior.
 3. **Source traces** — the raw provenance. One note per ingested source under
-   `Sources/`, recording where a fact came from so any claim can be audited back
-   to its origin.
+   `Sources/`, recording where a fact came from so any claim audits back to its
+   origin.
 4. **Context packs** — pre-assembled briefings. A context pack stitches the
    declarative and procedural notes relevant to one recurring task into a single
    note the agent loads at the start of that task, so retrieval is one read, not
@@ -33,9 +36,12 @@ evidence for both:
 
 Connectors are the fifth concern — not a memory type but the gated doorway
 through which external sources enter. Every connector is recorded in
-SOURCE-MANIFEST.md before it is read; see "Connector records" below.
+SOURCE-MANIFEST.md before a read; the gate lives in
+[the compiler reference](compiler.md).
 
 ## The folder structure
+
+The compiler builds the full source-backed structure:
 
 ```
 <vault>/
@@ -50,14 +56,18 @@ SOURCE-MANIFEST.md before it is read; see "Connector records" below.
 - **Canonical knowledge** lives in the nine domain folders (People … Preferences).
   Each note is one entity or one fact-cluster, source-backed.
 - **`Sources/`** holds one note per ingested source — the provenance layer.
-- **`Context Packs/`** holds the assembled briefings.
+- **`Context Packs/`** holds the assembled briefings retrieval loads.
 - **`Maps/`** holds Maps of Content (MOCs): index notes that link related
-  canonical notes so the graph is navigable.
+  canonical notes so the graph stays navigable.
 - **`Reports/`** holds the compiler's own output — ORIENTATION-REPORT.md and any
   per-phase reports.
-- **`_tools/`** holds a copy of the validator scripts so the vault re-validates
-  on its own after the compiler has moved on.
+- **`_tools/`** holds a copy of the validator scripts so the vault re-validates on
+  its own after the compiler has moved on.
 - The six root control files are the resumable state and the audit trail.
+
+Fast CRUD capture (see [crud-and-retrieval.md](crud-and-retrieval.md)) writes
+typed notes into the matching domain folders through `scripts/vault.sh`, so a
+hand-captured note and a compiled note share one structure and one query layer.
 
 ## Note formats
 
@@ -127,6 +137,8 @@ Replace the synchronous call with a domain event.
 
 ### Context pack note
 
+The retrieval workhorse — one read that briefs a whole recurring task:
+
 ```markdown
 ---
 type: context-pack
@@ -189,66 +201,41 @@ standups; Babbage agrees. No credentials, no private contact details copied.
 | `updated` | ISO date of the last compile touch | yes |
 | `sensitivity` | public / internal / personal / restricted | on any source-derived note |
 
+Hand-captured notes carry a lighter shared block — `title`, `type`, `created`,
+`tags` — owned by the `vault.sh` template; the compiler adds the provenance and
+confidence fields when a note graduates into source-backed canonical knowledge.
+
 ## Representing uncertainty and never inventing facts
 
-The compiler's cardinal rule: a note states only what a source supports. Three
-mechanics enforce it:
+The cardinal rule: a note states only what a source supports. Three mechanics
+enforce it:
 
 - **Confidence per claim.** A claim backed by one source is `low`; corroborated
   by two independent sources, `high`. The note's frontmatter `confidence` is the
   minimum across its claims.
 - **Explicit unknowns.** A gap is written as a gap ("role unknown — not in any
   source"), never filled by inference. An invented fact is a defect the critic
-  pass and `validate-sources` exist to catch.
+  pass and `validate-sources.py` exist to catch.
 - **Single-source flags.** A claim from one unverified source carries an inline
   "single source, unconfirmed" marker so a reader weights it correctly.
 
-## Redaction policy
+## Retrieval: the point of a second brain
 
-The vault is compiled from the exact places live secrets leak from, so redaction
-is a hard gate, not a courtesy:
+Memory exists to be looked up. Retrieval reads the vault three ways, cheapest
+first, and the procedure lives in full in
+[crud-and-retrieval.md](crud-and-retrieval.md):
 
-- **Never copy a secret.** API keys, tokens, private keys, passwords, bearer/OAuth
-  tokens, database URLs with inline credentials, SSH keys, webhook/signing
-  secrets, and session cookies are never written to a note. `scan-secrets.py` is
-  the backstop; the author is the first line.
-- **Summarize sensitive content, never paste it.** A source note records *what a
-  source says*, not a verbatim dump. Personal data (home address, medical
-  detail, private financial figures) is summarized to the minimum the memory
-  needs, or omitted.
-- **Mark sensitivity.** Every source-derived note carries a `sensitivity` field.
-  A `restricted` note names the constraint ("share only with the named party").
-- **Redact in place with a marker.** Where a quoted line would carry a secret,
-  the secret is replaced by `[REDACTED: <kind>]` so the structure survives and
-  the omission is visible.
+1. **Context pack first.** When a recurring task already has a pack under
+   `Context Packs/`, one `vault.sh find` for that pack returns the whole
+   briefing — the cheapest path, and the reason packs exist.
+2. **Search by entity, tag, or text.** `scripts/vault.sh find "<query>"` locates
+   notes by tag (`tags: [project]`), title, or full text — the entry point when
+   no pack covers the need.
+3. **Follow the links.** Open a located note and read its `## Related` /
+   `## Relationships` wikilinks and its `## Sources`, then read the linked notes.
+   The graph walk turns one hit into the connected context the task needs, and
+   every claim traces back to a source.
 
-## Ingestion plan tiers
-
-Sources are ingested in tiers, cheapest-signal and lowest-risk first, so the
-HARD CHECKPOINT after the smoke pass reviews a representative slice before the
-bulk lands:
-
-1. **Tier 0 — local, already-present sources.** Files in the working directory,
-   pasted text, exports the user already handed over. No connector, no external
-   call. Always first.
-2. **Tier 1 — verified read-only connectors.** Gmail, Notion, Calendar, and
-   similar, each gated through SOURCE-MANIFEST.md with account verified and
-   read-only capability confirmed. Read, never write.
-3. **Tier 2 — broad connector sweeps.** Larger historical pulls (full mailbox,
-   whole workspace) run only after the Tier 1 smoke pass is approved at HARD
-   CHECKPOINT 2.
-4. **Tier 3 — derived and cross-source synthesis.** Context packs and Maps of
-   Content, built once enough canonical notes exist to stitch together.
-
-External writes or mutations (sending mail, editing a Notion page, creating a
-calendar event) are out of scope for compilation and require separate, explicit
-per-action approval — the connector gate records read capability only.
-
-## Connector records
-
-Before a connector is read, SOURCE-MANIFEST.md gets a block with: `id`,
-`account`, `workspace`, `verified` (the account was confirmed to be the right
-one), `timestamp`, `capability` (read-only for compilation), and `approval`.
-A connector whose account does not match the user's intended account is BLOCKED:
-no ingestion until the mismatch is resolved. `generate-manifest.py --verify`
-checks every connector in `state.json` against this contract.
+A retrieval answer cites the notes it came from, so the founder (or the agent
+acting for them) can audit the recall against its provenance — the same
+source-backed discipline the compiler enforces on the way in.

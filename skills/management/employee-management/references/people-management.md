@@ -8,7 +8,7 @@ when it happens, correlate it over time, and act on a written record instead of 
 
 This reference sets the bar for *what good looks like*. The procedure in
 [SKILL.md](../SKILL.md) is the order of operations; the note mechanics belong to the
-second-brain-crud skill at [../../../obsidian/second-brain-crud/SKILL.md](../../../obsidian/second-brain-crud/SKILL.md).
+second-brain skill at [../../../obsidian/second-brain/SKILL.md](../../../obsidian/second-brain/SKILL.md).
 Decide *what* to record here; let that skill perform the write.
 
 A standing constraint runs through everything below: **people data is sensitive**. Mark

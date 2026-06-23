@@ -3,7 +3,7 @@ name: secure-sdlc
 description: Run every deterministic quality and security gate before a change ships, then attest the result. Use when the user wants to ship securely, run all the gates, harden a change before merge, produce a security attestation or SBOM, or prove a build is clean.
 ---
 
-Ship a change only after every deterministic gate is green, then record what "green" covered. This skill orchestrates the gates in a fixed order so each run is identical; the commands live in `skill-gate`, never in prose, and the per-gate rationale lives in [the pipeline reference](references/pipeline.md). Mechanical scanning is the floor — the attestation is the artifact that proves the floor was met.
+Ship a change only after every deterministic gate is green, then record what "green" covered. This skill orchestrates the gates in a fixed order so each run is identical; the commands live in `skill-gate`, never in prose, and the per-gate rationale lives in [the pipeline reference](references/pipeline.md). Mechanical scanning is the floor — the attestation is the artifact that proves the floor was met. The pipeline now subsumes the dependency supply-chain audit: the sca and secrets gates and the `syft` SBOM cover dependency vulnerabilities, pinning, and CVE triage, with the depth in [supply-chain risk](references/supply-chain.md).
 
 ## Steps
 
@@ -11,13 +11,13 @@ Ship a change only after every deterministic gate is green, then record what "gr
 
 2. **Pass the quality gates.** Run `skill-gate --category format`, then `--category lint`, then `--category types`, in that order. A non-zero exit blocks the pipeline; fix the source, then rerun the failing category until its exit code is zero. The step is done when format, lint, and types each exit zero.
 
-3. **Pass the security gates.** Run `skill-gate --category sast` (Semgrep), then `--category sca` (trivy or pip-audit), then `--category secrets` (gitleaks), in that order. Record each finding with its severity, rule id, and location. A critical or high finding blocks the merge until the finding is fixed or a waiver-log entry is recorded per [the pipeline reference](references/pipeline.md). The step is done when each security category exits zero or carries a recorded waiver-log entry that a reviewer has checked.
+3. **Pass the security gates.** Run `skill-gate --category sast` (Semgrep), then `--category sca` (trivy or pip-audit), then `--category secrets` (gitleaks), in that order. The sca and secrets gates are the dependency supply-chain audit: sca scans the locked tree for known-vulnerable packages, secrets hunts leaked credentials, and both depend on a committed lockfile so the scanned tree is reproducible — the threat model, the pinning discipline, and the CVE triage method live in [supply-chain risk](references/supply-chain.md). Record each finding with its severity, rule id, and location; triage each dependency CVE for reachability and a fixed version, then assign one of the four responses (upgrade, pin, patch, accept) from the same reference. A critical or high finding blocks the merge until the finding is fixed or a waiver-log entry is recorded per [the pipeline reference](references/pipeline.md). The step is done when each security category exits zero or carries a recorded waiver-log entry that a reviewer has checked.
 
 4. **Pass the test gate.** Run `skill-gate --category test`. A failing suite blocks the change; fix the source, then rerun until the suite exits zero. The step is done when the test category exits zero.
 
 5. **Seal the merge gate.** Run `skill-gate --strict` for the final pass, where a missing tool counts as a failure rather than a silent skip. A red result stops the line (Jidoka); a green result means every category ran on a present tool. The step is done when `skill-gate --strict` exits zero.
 
-6. **Produce the attestation.** Capture the machine-readable gate record with `skill-gate --strict --format json`, generate the SBOM with `syft` (per [supply-chain-audit](../supply-chain-audit/SKILL.md)), and record any waiver-log entry beside them. The SBOM command reads the locked tree:
+6. **Produce the attestation.** Capture the machine-readable gate record with `skill-gate --strict --format json`, generate the SBOM with `syft` (`skill-gate` has no SBOM capability; the format choice lives in [supply-chain risk](references/supply-chain.md)), and record any waiver-log entry beside them. The SBOM command reads the locked tree:
 
    ```sh
    syft . -o cyclonedx-json

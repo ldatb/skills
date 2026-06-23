@@ -1,11 +1,15 @@
-# Supply-chain audit
+# Supply-chain depth — auditing the dependency tree
 
-The judgment behind the supply-chain-audit steps. The gates (`skill-gate`) run the
-scanners and emit findings; this page is what the scanners cannot decide for you — which
-finding is real, which is reachable, and what a defensible response looks like. A modern
-application ships far more code from its dependency tree than from its own repository, so
-the dependency tree is the attack surface. Treat every package as untrusted input that
-executes with your privileges until an audit says otherwise.
+The judgment behind the secure-sdlc security gates when the finding lives in a dependency
+rather than in first-party code. The gates (`skill-gate`) run the sca and secrets scanners
+and emit findings; this page is what the scanners cannot decide — which finding is real,
+which is reachable, and what a defensible response looks like. A modern application ships
+far more code from its dependency tree than from its own repository, so the dependency tree
+is the attack surface. Treat every package as untrusted input that executes with your
+privileges until an audit says otherwise.
+
+This reference is the canonical home for the dependency-audit substance the secure-sdlc
+pipeline folds into its **sca** and **secrets** gates and its `syft` SBOM step.
 
 ## The threat model — five ways the tree turns hostile
 
@@ -35,7 +39,8 @@ An attacker rarely breaks your code. The attacker ships you theirs, through one 
   repository, baked into an image layer, or printed into a build log. A leak is not a
   dependency flaw, yet it belongs in the same audit because the blast radius is identical: an
   attacker with the credential owns whatever the credential owns. The defense is secret
-  scanning on every commit and on history, plus rotation the moment a secret is found.
+  scanning on every commit and on history (the **secrets** gate), plus rotation the moment a
+  secret is found.
 
 Read every CVE finding through this model. A vulnerability in a package you pulled by
 mistake is a different problem from the same CVE in a package you depend on deliberately.
@@ -84,7 +89,8 @@ Two formats dominate, and a useful audit can emit either:
 Pick by audience: CycloneDX for the security pipeline, SPDX when a contract or compliance
 regime names it. An SBOM is only as honest as its inputs, so generate it from the same
 locked tree the build ships — an SBOM built from floating manifests lists components that
-were never installed.
+were never installed. In the secure-sdlc pipeline the SBOM comes from `syft` (`skill-gate`
+has no SBOM capability), generated from the locked tree alongside the gate record.
 
 ## Triaging a CVE finding — severity is a label, not a verdict
 
@@ -143,9 +149,10 @@ Every confirmed finding resolves to exactly one of these, each with a written re
   track the upstream issue so the patch is removed once a real release lands.
 - **Accept with justification.** The finding is not reachable, or the residual risk is
   below the bar — record an explicit, signed-off exception that names the CVE, states why it
-  is accepted (not reachable / no fix / compensating control), and sets a review date. A
-  suppression without a justification is a hidden risk that the next audit cannot
-  distinguish from an oversight.
+  is accepted (not reachable / no fix / compensating control), and sets a review date. This
+  exception is the supply-chain analogue of the pipeline's waiver-log entry. A suppression
+  without a justification is a hidden risk that the next audit cannot distinguish from an
+  oversight.
 
 The unacceptable fifth option is silent dismissal. A finding that vanishes from the report
 with no upgrade, no override, no patch, and no recorded acceptance is the one that becomes
@@ -178,13 +185,16 @@ number was the alarm; the triage was the work.
 
 ## Real tools, one role each
 
-The audit references these; the exact commands live behind `skill-gate`, never inlined here.
+The audit references these; the exact scan commands live behind `skill-gate`, never inlined
+here. The SBOM is the one step `skill-gate` does not own, so `syft` is invoked directly.
 
 - **`trivy`**, **`grype`** — scan a tree (or an image) against vulnerability databases and
-  emit CVE findings with severity.
+  emit CVE findings with severity. These back the **sca** gate.
 - **`pip-audit`** (Python), **`npm audit`** (Node) — ecosystem-native vulnerability scans
-  reading the lockfile.
-- **`syft`** — generate the SBOM (CycloneDX or SPDX) from the source tree or image.
-- **`gitleaks`** — scan the working tree and history for leaked credentials.
+  reading the lockfile, also behind the **sca** gate.
+- **`syft`** — generate the SBOM (CycloneDX or SPDX) from the source tree or image. This is
+  the secure-sdlc SBOM step, run outside `skill-gate`.
+- **`gitleaks`** — scan the working tree and history for leaked credentials. This backs the
+  **secrets** gate.
 
 The scanner is the easy half. The triage and the recorded decision are the audit.

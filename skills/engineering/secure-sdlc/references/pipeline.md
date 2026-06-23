@@ -153,7 +153,8 @@ through the gates:
    query.
 9. **`--strict`** → every tool is present and green, so the merge gate exits zero.
 10. **attestation** → the gate record from `skill-gate --strict --format json`, the SBOM from
-    `syft` (per supply-chain-audit), a CVE summary listing the waived `urllib3` finding, and
+    `syft` (the dependency depth lives in [supply-chain risk](supply-chain.md)), a CVE
+    summary listing the waived `urllib3` finding, and
     the one active waiver-log entry with its 30-day expiry are collected into the attestation.
     The change ships "secure at this level," and the waived CVE is now tracked toward its
     expiry rather than forgotten.

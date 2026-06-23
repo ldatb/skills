@@ -76,9 +76,9 @@ deterministic (script + manual). Per-skill docs: generated README.md per skill (
 - [x] marketing 13→4: copywriting · content · growth · outreach. social/ removed.
 - [x] design 5→1 `frontend-design` (Swiss editorial + brutalism) + absorbed site-architecture; brandkit separate.
 - [x] `agent-loop` ← ralph + app-completion-loop (checkpointed + autonomous; subagent-driven-development composes).
-- [ ] obsidian 3→1 `second-brain` (obsidian-vault + ralph-vault + second-brain-crud; keep scripts; add retrieval).  <-- NEXT
-- [ ] secure-sdlc ← absorb supply-chain-audit.
-- [ ] rename docs-sync → `documentation`; rename simple → `brainstorm`.
+- [x] obsidian 3→1 `second-brain` (capture + compile + retrieve + maintain; 7 scripts moved in; checkpoints/gates preserved).
+- [x] secure-sdlc ← absorbed supply-chain-audit (references/supply-chain.md is now canonical there).
+- [ ] rename docs-sync → `documentation`; rename simple → `brainstorm`.  <-- NEXT
 - [ ] remove standalone least-code → imbue subtraction ladder into foundation (also imbue full-output-enforcement + verification-before-completion; keep those two standalone).
 
 ## R-behavior
