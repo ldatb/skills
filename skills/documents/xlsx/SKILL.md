@@ -1,28 +1,46 @@
 ---
 name: xlsx
-description: Generate extremely beautiful, correct spreadsheets with openpyxl — formula-driven, consistently formatted, restrained in color. Use when the user asks to create, build, or generate an .xlsx / Excel / spreadsheet, a financial model, a dashboard, a data table, or a tabular report; when numbers must be formatted, totals must compute from formulas, or a sheet must look designed rather than raw gridlines; or when a workbook needs styled headers, frozen panes, conditional formatting, or charts.
+description: Generate extremely beautiful, correct spreadsheets deterministically — the model writes a JSON spec of sheets, columns, rows, and number formats, and a Python script renders the styled workbook via openpyxl. Use when the user asks to create, build, or generate an .xlsx / Excel / spreadsheet, a data table, or a tabular report; when numbers must be consistently formatted; or when a workbook needs styled headers, frozen panes, and sized columns rather than raw gridlines.
 ---
 
-A spreadsheet built by typing values into cells drifts into the raw-grid wall: heavy gridlines everywhere, numbers in no consistent format, totals hard-coded so they lie the moment an input changes. A beautiful spreadsheet is built the opposite way — a clear header band, quiet zebra rows instead of a cage of borders, every number on one number format, and every total a formula that recomputes when its inputs move. Beauty and correctness are one property here: a sheet that looks designed but hard-codes its sums is neither.
+A spreadsheet built by typing values into cells drifts into the raw-grid wall — heavy gridlines everywhere, numbers in no consistent format, ad-hoc per-cell styling that varies run to run. The deterministic alternative splits the work: the model decides the structure and supplies the data, and a fixed script renders the styling the same way every time. The model writes a JSON spec; `scripts/render.py` turns that spec into a workbook with one reused header style, a frozen header row, content-sized columns, and the per-column number formats the spec names.
 
-Generate the workbook deterministically with openpyxl. Push styling into reused cell styles and number formats, and push results into formulas, never into typed constants. The depth bar for the design system, the archetypes, and the failure modes lives in [references/beautiful-spreadsheets.md](references/beautiful-spreadsheets.md), grounded in the [foundation](../../meta/foundation/SKILL.md) determinism doctrine.
+Push every design decision into the script and every data decision into the spec. The depth bar for the design system, the archetypes, and the failure modes lives in [references/beautiful-spreadsheets.md](references/beautiful-spreadsheets.md), grounded in the [foundation](../../meta/foundation/SKILL.md) determinism doctrine.
 
 ## Steps
 
-1. **Name the archetype and its layout.** State which spreadsheet this is — dashboard, financial model, data table, or report — and list its sheets and the inputs / calcs / outputs each holds, drawn from the archetype section in [the reference](references/beautiful-spreadsheets.md). Done when the sheet list and the inputs-calcs-outputs split are written down before any code runs.
+1. **State the workbook's purpose and its sheets.** Name which spreadsheet this is — data table or tabular report — and list the sheets with their columns, drawing the archetype from [the reference](references/beautiful-spreadsheets.md). This step ends when the sheet names and the per-sheet column lists are written down ahead of the spec.
 
-2. **Fix the design tokens once.** Define the reused styling before adding data: one header `Font` and `PatternFill`, a zebra `PatternFill` for alternate rows, a thin border side for subtle separation, and the palette of at most three colors from the design system in [the reference](references/beautiful-spreadsheets.md). Done when every later style reads from this token set and no color is picked ad hoc per cell.
+2. **Assemble the data into a JSON spec.** Build one spec object whose `sheets` list holds an entry per sheet, each carrying a `name`, a `columns` list, a `rows` list of row arrays, and a `number_formats` map from column name to format string. Keep every row's length within the column count, and choose one format per numeric column from the table in [the reference](references/beautiful-spreadsheets.md). This step ends when the spec is valid JSON whose every row fits its columns and whose every number-format key names a real column.
 
-3. **Write inputs as data and outputs as formulas.** Place input cells as plain typed values in their own area, then compute the totals, ratios, and derived figures with openpyxl formula strings referencing those cells — zero hand-calculated numbers in result cells. Done when changing one input cell would update every dependent cell, and no result cell holds a literal.
+3. **Render the workbook deterministically.** Run `scripts/render.py build <spec.json> <out.xlsx>` to write the styled workbook from the spec. The script applies the bold filled header, freezes the header row at `A2`, sizes columns to their content, and stamps the per-column number formats — no styling is hand-written per run. This step ends when the command exits zero and prints the written workbook path.
 
-4. **Apply number formats and alignment per column.** Set one `number_format` on a numeric column — currency, percent, thousands-separated integer, or date — and right-align the numbers, following the formatting rules in [the reference](references/beautiful-spreadsheets.md). Done when a numeric column carries one shared format down its length and no number renders as a raw float.
+4. **Verify the artifact by reopening it.** Reopen the saved `.xlsx` with `openpyxl.load_workbook`, then confirm the sheet names, the header cells, a sampled data value, and the frozen pane match the spec from step 1 — observe the real file rather than assume it. This step ends when the reopened workbook reports the expected sheets, a header cell equal to its column name, a data cell equal to its spec value, and `freeze_panes` equal to `A2`.
 
-5. **Style the header band and quiet the grid.** Apply the header tokens to the top row, set sensible column widths to the content, freeze the header row with `freeze_panes`, and replace heavy gridlines with zebra fills or thin borders only. Done when the header row stays visible on scroll, columns fit their content, and the sheet shows no full-grid cage.
+## Scripts
 
-6. **Run the design-and-correctness review.** Check the workbook against the red-flags list in [the reference](references/beautiful-spreadsheets.md): heavy gridlines, unformatted numbers, hard-coded values, an unfrozen header, mixed number formats, magic constants. Record each hit as a defect to fix. Done when the red-flags list has a verdict and no unresolved defect remains.
+`scripts/render.py` is the deterministic renderer. Define the data and structure in a JSON spec, then let the script own all styling.
 
-7. **Verify the artifact by reopening it.** Save the `.xlsx`, reopen it with openpyxl, and confirm the sheet names, the frozen pane, and a sampled formula cell match the plan from step 1 — observe the real file rather than assume it. Done when the reopened workbook reports the expected sheets, a frozen header, and a formula (not a literal) in a checked result cell.
+- `render.py build <spec.json> <out.xlsx>` — read the spec and write a styled `.xlsx`.
+- `render.py --selftest` — build an in-code fixture, reopen it, and assert the header and a data cell; this prints `skipped` when openpyxl is absent and exits zero.
 
-See also: [references/beautiful-spreadsheets.md](references/beautiful-spreadsheets.md) for deterministic openpyxl generation, the design system, the inputs-calcs-outputs separation, the archetypes, the failure modes and red flags, and a worked formula-driven example.
+The spec is one object with a non-empty `sheets` list. Each sheet entry holds a `name`, a non-empty `columns` list, an optional `rows` list of arrays, and an optional `number_formats` map keyed by column name:
+
+```json
+{
+  "sheets": [
+    {
+      "name": "Sheet1",
+      "columns": ["Region", "Q1", "Q2"],
+      "rows": [["West", 10, 20], ["East", 5, 8]],
+      "number_formats": {"Q1": "#,##0", "Q2": "#,##0"}
+    }
+  ]
+}
+```
+
+The renderer validates at the boundary — a missing or empty `sheets` list, a sheet without a `name` or `columns`, a row wider than its column count, or a number-format key naming an unknown column each fail with a clear stderr message and a non-zero exit.
+
+See also: [references/beautiful-spreadsheets.md](references/beautiful-spreadsheets.md) for the design system, the per-column number formats, the archetypes, the failure modes and red flags, and the styling the renderer applies.
 
 With a vault configured, record this skill's outcome to the second brain (opt-out; ask first if the value is unclear) — see [Feed the second brain](../../meta/foundation/SKILL.md).

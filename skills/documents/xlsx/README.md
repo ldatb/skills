@@ -1,6 +1,6 @@
 # xlsx
 
-> Generate extremely beautiful, correct spreadsheets with openpyxl — formula-driven, consistently formatted, restrained in color. Use when the user asks to create, build, or generate an .xlsx / Excel / spreadsheet, a financial model, a dashboard, a data table, or a tabular report; when numbers must be formatted, totals must compute from formulas, or a sheet must look designed rather than raw gridlines; or when a workbook needs styled headers, frozen panes, conditional formatting, or charts.
+> Generate extremely beautiful, correct spreadsheets deterministically — the model writes a JSON spec of sheets, columns, rows, and number formats, and a Python script renders the styled workbook via openpyxl. Use when the user asks to create, build, or generate an .xlsx / Excel / spreadsheet, a data table, or a tabular report; when numbers must be consistently formatted; or when a workbook needs styled headers, frozen panes, and sized columns rather than raw gridlines.
 
 **Model-invoked** — the agent runs it automatically when your request matches the triggers below. You can also invoke it by name.
 
@@ -9,26 +9,22 @@
 - create
 - build
 - generate an .xlsx / Excel / spreadsheet
-- a financial model
-- a dashboard
 - a data table
-- a tabular report; when numbers must be formatted
-- totals must compute from formulas
-- a sheet must look designed rather than raw gridlines;
+- a tabular report; when numbers must be consistently formatted;
 - when a workbook needs styled headers
 - frozen panes
-- conditional formatting
-- charts
+- and sized columns rather than raw gridlines
 
 ## What it does
 
-1. Name the archetype and its layout.
-2. Fix the design tokens once.
-3. Write inputs as data and outputs as formulas.
-4. Apply number formats and alignment per column.
-5. Style the header band and quiet the grid.
-6. Run the design-and-correctness review.
-7. Verify the artifact by reopening it.
+1. State the workbook's purpose and its sheets.
+2. Assemble the data into a JSON spec.
+3. Render the workbook deterministically.
+4. Verify the artifact by reopening it.
+
+## Scripts
+
+- `scripts/render.py`
 
 ## Learn more
 
