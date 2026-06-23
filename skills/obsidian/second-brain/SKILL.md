@@ -13,9 +13,9 @@ ship a copied secret.
 
 Every vault mutation delegates to a script in `scripts/`, so a filename never
 overwrites, a write is never half-finished, and the deterministic validators own
-every verdict. The vault root is configurable — point `$VAULT` at the configured
-vault path (the project's vault), falling back to `./vault`; never hardcode an
-absolute path.
+every verdict. The vault root resolves itself — `vault.sh` reads the configured
+path from `skill-config`, an explicit `$VAULT` overrides it, and `./vault` is the
+last-resort fallback; never hardcode an absolute path.
 
 The depth bar is [code-review](../../engineering/code-review/SKILL.md): judge the
 vault against what it must deliver — fast recall of connected, source-backed
@@ -41,10 +41,11 @@ frontmatter contract — is in
 
 ## Steps
 
-1. **Resolve the vault and name the capability.** Confirm `$VAULT` points at the
-   configured vault path, then map the request to one capability — capture,
-   retrieve, compile, or maintain. This step is done once the vault root resolves
-   and one capability is named for the request.
+1. **Initialize and name the capability.** Run `scripts/vault.sh init` to resolve
+   and create the vault root — the script reads the configured path from
+   `skill-config`, so no manual `$VAULT` export is needed. Then map the request to
+   one capability — capture, retrieve, compile, or maintain. This step is done once
+   `init` prints the vault path and one capability is named for the request.
 
 2. **Capture through the script.** Create a typed note with
    `scripts/vault.sh capture <type> "<title>" [key=value ...]`, append a
@@ -107,8 +108,8 @@ frontmatter contract — is in
 Every operation delegates here; a script runs `--selftest` to build temp
 fixtures, assert, and exit 0:
 
-- `scripts/vault.sh` — capture, append, link, daily, find, and the guarded `rm`
-  (the CRUD + correlation engine).
+- `scripts/vault.sh` — init, capture, append, link, daily, find, and the guarded
+  `rm` (the CRUD + correlation engine).
 - `scripts/validate-wikilinks.py` — resolve `[[wikilinks]]`; report unresolved and
   ambiguous.
 - `scripts/validate-slugs.py` — empty filenames, invalid paths, duplicate slugs,

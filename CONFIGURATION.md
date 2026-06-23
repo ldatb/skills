@@ -77,11 +77,12 @@ second-brain feed through `vault` + `second_brain`, and the gates read `gates.st
 
 1. Set `vault.path` to your Obsidian vault and `vault.enabled = true` (above). The path is absolute; the folder need not exist yet.
 2. Confirm: `skill-config path` prints the path (exit 0). A silent exit 1 means the feed is still off.
-3. Bridge the config to the script. The [second-brain](skills/obsidian/second-brain/SKILL.md) skill writes through `scripts/vault.sh`, which reads the `$VAULT` environment variable. The skill exports it for you; for direct CLI use, export it yourself: `export VAULT="$(skill-config path)"` (add that line to your shell profile to make it stick).
-4. Make the first note. No scaffold step exists — `vault.sh` creates the vault and its type folders on demand:
+3. Initialize the vault. The [second-brain](skills/obsidian/second-brain/SKILL.md) skill writes through `scripts/vault.sh`, which resolves the vault path from `skill-config` on its own — no manual `export VAULT` needed. An explicit `export VAULT=/some/path` still overrides the config for a one-off vault.
+4. Make the first note. No scaffold step exists — `vault.sh init` creates the vault root, and capture creates the type folders on demand:
 
    ```bash
    VAULT_SH=skills/obsidian/second-brain/scripts/vault.sh
+   bash "$VAULT_SH" init                                     # resolve + create the vault root
    bash "$VAULT_SH" capture project "Q3 Roadmap" owner=you   # prints the new note path
    bash "$VAULT_SH" daily                                     # today's daily note
    bash "$VAULT_SH" find "Q3"                                 # locate it again

@@ -3,6 +3,7 @@
 # Capture life/work/project notes fast, link entities, and find them again — with
 # no destructive operation beyond a single guarded, in-vault delete.
 #
+#   vault.sh init                     -> resolve + create the vault root, print it
 #   vault.sh capture <type> <title> [key=value ...]
 #                                     -> create a typed note, print its path; each
 #                                        trailing key=value lands as a frontmatter field
@@ -13,7 +14,7 @@
 #   vault.sh rm      <note>           -> guarded delete of one note inside the vault
 #   vault.sh --selftest               -> build a temp vault, exercise all of the above
 #
-# Vault root resolves from $VAULT (else ./vault). Types: person project meeting
+# Vault root resolves from $VAULT, else `skill-config path`, else ./vault. Types: person project meeting
 # idea task decision daily client feedback 1on1 company. Shell, not Python: the
 # job is slug + file plumbing.
 # Bash is required for `set -o pipefail`; the rest stays POSIX-clean. Filenames
@@ -33,9 +34,15 @@ abspath_dir() {
   CDPATH= cd -- "$1" && pwd -P
 }
 
-# Resolve the vault root (env override, then ./vault), created if absent.
+# Resolve the vault root: an explicit $VAULT wins, else the configured path
+# (`skill-config path`), else ./vault. Created if absent. So a configured vault
+# needs no manual `export VAULT` — the config file is the single source of truth.
 vault_root() {
-  local root="${VAULT:-./vault}"
+  local root="${VAULT:-}"
+  if [ -z "$root" ] && command -v skill-config >/dev/null 2>&1; then
+    root="$(skill-config path 2>/dev/null || true)"
+  fi
+  [ -n "$root" ] || root="./vault"
   mkdir -p "$root"
   abspath_dir "$root"
 }
@@ -300,6 +307,15 @@ cmd_daily() {
   printf '%s\n' "$path"
 }
 
+# init: resolve and create the vault root, then print it. The per-type folders are
+# made on demand by capture; init exists so a first run resolves the configured
+# vault and has somewhere to write. Idempotent — a second run reports the same root.
+cmd_init() {
+  local root
+  root=$(vault_root)
+  printf 'vault ready: %s\n' "$root"
+}
+
 # find <query>: list vault notes whose tag, title, or text matches the query.
 # Prints matching paths; exit 0 even on no match (an empty result is not an error).
 cmd_find() {
@@ -376,6 +392,12 @@ selftest() {
   [ "$(slugify 'Ada Lovelace!')" = "ada-lovelace" ] || { echo "FAIL: slugify basic"; exit 1; }
   [ "$(slugify '  Q3   Roadmap  ')" = "q3-roadmap" ] || { echo "FAIL: slugify spaces"; exit 1; }
   [ "$(slugify '@@@')" = "untitled" ] || { echo "FAIL: slugify empty"; exit 1; }
+
+  # init resolves and creates the vault root, reports it, and is idempotent.
+  out=$(cmd_init)
+  case "$out" in "vault ready: "*) : ;; *) echo "FAIL: init output ($out)"; exit 1 ;; esac
+  [ -d "$VAULT" ] || { echo "FAIL: init did not create the vault root"; exit 1; }
+  [ "$(cmd_init)" = "$out" ] || { echo "FAIL: init not idempotent"; exit 1; }
 
   # unknown type is rejected.
   cmd_capture bogus "x" 2>/dev/null && { echo "FAIL: bad type accepted"; exit 1; } || true
@@ -483,11 +505,11 @@ selftest() {
 # --- dispatch --------------------------------------------------------------
 
 usage() {
-  echo "usage: vault.sh <capture|append|link|daily|find|rm> [args]" >&2
+  echo "usage: vault.sh <init|capture|append|link|daily|find|rm> [args]" >&2
   echo "       vault.sh capture <type> <title> [key=value ...]" >&2
   echo "       vault.sh --selftest" >&2
   echo "types: $TYPES" >&2
-  echo "vault root: \$VAULT (default ./vault)" >&2
+  echo "vault root: \$VAULT, else \`skill-config path\`, else ./vault" >&2
 }
 
 main() {
@@ -498,6 +520,7 @@ main() {
   [ "$#" -ge 1 ] || { usage; exit 2; }
   local sub="$1"; shift
   case "$sub" in
+    init)    cmd_init "$@" ;;
     capture) cmd_capture "$@" ;;
     append)  cmd_append "$@" ;;
     link)    cmd_link "$@" ;;

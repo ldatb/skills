@@ -24,7 +24,7 @@
 
 ## What it does
 
-1. Resolve the vault and name the capability.
+1. Initialize and name the capability.
 2. Capture through the script.
 3. Retrieve connected context.
 4. Compile: orient, gate, and pass HARD CHECKPOINT 1.
