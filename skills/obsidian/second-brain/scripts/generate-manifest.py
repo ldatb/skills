@@ -33,13 +33,23 @@ import sys
 import tempfile
 from pathlib import Path
 
-try:
-    from skillkit import atomic_write
-except ImportError:  # pragma: no cover - exercised only outside the repo venv
-    _repo_tools = Path(__file__).resolve().parents[4] / "tools"
-    if _repo_tools.is_dir():
-        sys.path.insert(0, str(_repo_tools))
-    from skillkit import atomic_write  # noqa: E402
+def _atomic_write(path: str, data: str) -> None:
+    """Write atomically (temp + rename); stdlib-only so this runs from a vault's _tools/."""
+    import os
+    import tempfile
+
+    directory = os.path.dirname(os.path.abspath(path)) or "."
+    fd, tmp = tempfile.mkstemp(dir=directory)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(data)
+        os.replace(tmp, path)
+    except BaseException:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
 
 _REQUIRED_FIELDS = ("account", "workspace", "verified", "timestamp", "capability", "approval")
 
@@ -120,7 +130,7 @@ def run_verify(vault: Path) -> int:
 
 def run_generate(vault: Path, out: Path) -> int:
     connectors = _load_connectors(vault / "state.json")
-    atomic_write(out, render_manifest(connectors))
+    _atomic_write(out, render_manifest(connectors))
     print(f"wrote manifest skeleton: {out} ({len(connectors)} connector(s))")
     return 0
 

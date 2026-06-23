@@ -34,6 +34,7 @@
 ## Scripts
 
 - `scripts/generate-manifest.py`
+- `scripts/scaffold.py`
 - `scripts/scan-secrets.py`
 - `scripts/validate-artifacts.sh`
 - `scripts/validate-slugs.py`

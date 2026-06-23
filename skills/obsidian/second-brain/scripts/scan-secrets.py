@@ -26,13 +26,23 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
-try:
-    from skillkit import atomic_write
-except ImportError:  # pragma: no cover - exercised only outside the repo venv
-    _repo_tools = Path(__file__).resolve().parents[4] / "tools"
-    if _repo_tools.is_dir():
-        sys.path.insert(0, str(_repo_tools))
-    from skillkit import atomic_write  # noqa: E402
+def _atomic_write(path: str, data: str) -> None:
+    """Write atomically (temp + rename); stdlib-only so this runs from a vault's _tools/."""
+    import os
+    import tempfile
+
+    directory = os.path.dirname(os.path.abspath(path)) or "."
+    fd, tmp = tempfile.mkstemp(dir=directory)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(data)
+        os.replace(tmp, path)
+    except BaseException:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
 
 
 @dataclass(frozen=True)
@@ -111,7 +121,7 @@ def run(vault: str, report_path: str | None) -> int:
     lines.extend(rows)
     rendered = "\n".join(lines) + "\n"
     if report_path:
-        atomic_write(report_path, rendered)
+        _atomic_write(report_path, rendered)
     print(rendered, end="")
     return 1 if rows else 0
 
