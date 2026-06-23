@@ -78,13 +78,15 @@ deterministic (script + manual). Per-skill docs: generated README.md per skill (
 - [x] `agent-loop` ← ralph + app-completion-loop (checkpointed + autonomous; subagent-driven-development composes).
 - [x] obsidian 3→1 `second-brain` (capture + compile + retrieve + maintain; 7 scripts moved in; checkpoints/gates preserved).
 - [x] secure-sdlc ← absorbed supply-chain-audit (references/supply-chain.md is now canonical there).
-- [ ] rename docs-sync → `documentation`; rename simple → `brainstorm`.  <-- NEXT
-- [ ] remove standalone least-code → imbue subtraction ladder into foundation (also imbue full-output-enforcement + verification-before-completion; keep those two standalone).
+- [x] renamed docs-sync → `documentation`; simple → `brainstorm`.
+- [x] least-code imbued into foundation (subtraction ladder + references/subtraction.md); standalone removed. (full-output-enforcement + verification-before-completion kept standalone; imbue note in foundation pending.)
 
-## R-behavior
-- [ ] autoguardrails: auto (triggers + pre-commit/CI runs check-policy.sh every commit).
-- [ ] documentation: auto on code change (triggers + PostToolUse hook runs skill-docs).
-- [ ] git-guardrails: always (triggers on every git op).
+## R-behavior ✅ (skill-level)
+- [x] autoguardrails: description conveys the auto pre-commit/CI gate it installs.
+- [x] documentation: "Run after every code change" trigger. (PostToolUse hook = per-user settings, documented in skill.)
+- [x] git-guardrails: "Applies to every git action" trigger.
+
+# ===== R-merges + R-behavior DONE. Remaining: R-content, R-systems, README refresh. =====
 
 ## R-content
 - [ ] AWS/Azure/GCP: each follows its cloud philosophy (AWS managed-first/Well-Architected; Azure WAF; GCP Arch Framework).
