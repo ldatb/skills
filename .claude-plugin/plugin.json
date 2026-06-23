@@ -5,6 +5,7 @@
     "./skills/cloud/azure-toolkit",
     "./skills/cloud/cloud-best-practices",
     "./skills/cloud/gcp-toolkit",
+    "./skills/cloud/soc-siem",
     "./skills/design/brandkit",
     "./skills/design/frontend-design",
     "./skills/documents/docx",
