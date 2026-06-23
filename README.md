@@ -49,6 +49,18 @@ applied to agent skills. The full doctrine lives in
 
 `skill-update` reports when a newer tagged release exists.
 
+## Configure
+
+Point the skills at your Obsidian vault (and tune the rest) in `~/.config/skills/skills.toml`:
+
+```bash
+skill-config init      # seed the global config (~/.config/skills/skills.toml)
+skill-config path      # prints the vault path once it is enabled
+```
+
+The full guide — every key, the second-brain feed, per-skill `[skill.<name>]` settings,
+and the optional hooks — is in [CONFIGURATION.md](CONFIGURATION.md).
+
 ## Develop
 
 ```bash
