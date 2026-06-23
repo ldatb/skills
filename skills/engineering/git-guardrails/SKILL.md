@@ -1,6 +1,6 @@
 ---
 name: git-guardrails
-description: Keep git operations safe and deterministic — conventional commits via a script, no destructive history rewrites, branch before committing on a shared branch. Use when the user commits, pushes, rebases, resets, or asks about git workflow.
+description: Keep git operations safe and deterministic — conventional commits via a script, no destructive history rewrites, branch before committing on a shared branch. Applies to every git action; use when the user commits, pushes, rebases, resets, or asks about git workflow.
 ---
 
 Treat git history as shared state: a wrong push is felt by everyone. Commit through a deterministic helper, never rewrite published history, and confirm before any destructive operation.

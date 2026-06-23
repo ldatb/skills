@@ -1,6 +1,6 @@
 ---
 name: documentation
-description: Keep documentation in sync with code — detect link drift deterministically with skill-docs, then reconcile the prose a tool cannot write. Use when the user changes code, renames or moves a file, updates a public API, edits a README or guide, or asks to verify, refresh, or audit the docs after a change.
+description: Keep documentation in sync with code — detect link drift deterministically with skill-docs, then reconcile the prose a tool cannot write. Run after every code change. Use when the user changes code, renames or moves a file, updates a public API, edits a README or guide, or asks to verify, refresh, or audit the docs.
 ---
 
 Docs drift the moment code moves and the prose stays still. A doc that lies is worse than no doc: a reader trusts it, acts on it, and fails in a way the missing doc never would have caused. This skill catches the drift a tool can prove, then reconciles the prose a tool cannot.
