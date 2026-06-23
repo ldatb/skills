@@ -23,7 +23,7 @@
 # that refuses the vault root and anything outside it, mirroring skillkit.safe_remove.
 set -euo pipefail
 
-TYPES="person project meeting idea task decision daily client feedback 1on1 company"
+TYPES="person project meeting idea task decision daily client feedback 1on1 company product topic commitment procedure preference source"
 
 # --- helpers ---------------------------------------------------------------
 
@@ -55,6 +55,26 @@ slugify() {
     | tr '[:upper:]' '[:lower:]' \
     | sed -e 's/[^a-z0-9]\{1,\}/-/g' -e 's/^-\{1,\}//' -e 's/-\{1,\}$//')
   [ -n "$s" ] && printf '%s' "$s" || printf '%s' "untitled"
+}
+
+# Map a note type to its canonical Capitalized vault folder, so a hand-captured note
+# and a compiled note share one structure (People, Companies, Projects, ...). Event
+# and working types fold into the canonical folder that fits (a meeting is a Source).
+type_folder() {
+  case "$1" in
+    person) echo People ;;
+    company | client) echo Companies ;;
+    project) echo Projects ;;
+    product) echo Products ;;
+    topic | idea) echo Topics ;;
+    decision) echo Decisions ;;
+    task | commitment) echo Commitments ;;
+    procedure) echo Procedures ;;
+    preference) echo Preferences ;;
+    source | meeting | 1on1 | feedback) echo Sources ;;
+    daily) echo Daily ;;
+    *) echo "$1" ;;
+  esac
 }
 
 # Reject an unknown note type at the boundary with a clear message.
@@ -225,7 +245,7 @@ cmd_capture() {
   root=$(vault_root)
   slug=$(slugify "$title")
   today=$(date +%Y-%m-%d)
-  path=$(reserve_path "$root/$type" "$slug" ".md")
+  path=$(reserve_path "$root/$(type_folder "$type")" "$slug" ".md")
   atomic_write "$path" "$(render_template "$type" "$title" "$today" "$@")"
   printf '%s\n' "$path"
 }
@@ -297,12 +317,12 @@ cmd_daily() {
   local root today path
   root=$(vault_root)
   today=$(date +%Y-%m-%d)
-  path="$root/daily/$today.md"
+  path="$root/Daily/$today.md"
   if [ -f "$path" ]; then
     printf '%s\n' "$path"
     return 0
   fi
-  mkdir -p "$root/daily"
+  mkdir -p "$root/Daily"
   atomic_write "$path" "$(render_template daily "$today" "$today")"
   printf '%s\n' "$path"
 }
@@ -405,13 +425,13 @@ selftest() {
   # capture creates a typed note with frontmatter and a slug filename.
   person=$(cmd_capture person "Ada Lovelace")
   [ -f "$person" ] || { echo "FAIL: person note not created"; exit 1; }
-  case "$person" in */person/ada-lovelace.md) : ;; *) echo "FAIL: person path ($person)"; exit 1 ;; esac
+  case "$person" in */People/ada-lovelace.md) : ;; *) echo "FAIL: person path ($person)"; exit 1 ;; esac
   grep -q '^type: person$' "$person" || { echo "FAIL: person frontmatter type"; exit 1; }
   grep -q '^## Related$' "$person" || { echo "FAIL: person Related section"; exit 1; }
 
   # capture never overwrites: a second person of the same title gets a -2 name.
   out=$(cmd_capture person "Ada Lovelace")
-  case "$out" in */person/ada-lovelace-2.md) : ;; *) echo "FAIL: collision suffix ($out)"; exit 1 ;; esac
+  case "$out" in */People/ada-lovelace-2.md) : ;; *) echo "FAIL: collision suffix ($out)"; exit 1 ;; esac
   [ "$out" != "$person" ] || { echo "FAIL: collision overwrote"; exit 1; }
 
   project=$(cmd_capture project "Q3 Roadmap")
@@ -423,7 +443,7 @@ selftest() {
   # an added type (client) captures into its own directory with a typed tag.
   client=$(cmd_capture client "Acme Corp")
   [ -f "$client" ] || { echo "FAIL: client note not created"; exit 1; }
-  case "$client" in */client/acme-corp.md) : ;; *) echo "FAIL: client path ($client)"; exit 1 ;; esac
+  case "$client" in */Companies/acme-corp.md) : ;; *) echo "FAIL: client path ($client)"; exit 1 ;; esac
   grep -q '^type: client$' "$client" || { echo "FAIL: client frontmatter type"; exit 1; }
   grep -q '^tags: \[client\]$' "$client" || { echo "FAIL: client tag"; exit 1; }
 
@@ -450,9 +470,9 @@ selftest() {
   cmd_capture idea "Reserved" type=person 2>/dev/null && { echo "FAIL: reserved key accepted"; exit 1; } || true
 
   # a bad field key is rejected and leaves no note behind.
-  before=$({ find "$tmp/vault/idea" -type f 2>/dev/null || true; } | wc -l)
+  before=$({ find "$tmp/vault/Topics" -type f 2>/dev/null || true; } | wc -l)
   cmd_capture idea "Bad field" "Bad Key=x" 2>/dev/null && { echo "FAIL: bad field key accepted"; exit 1; } || true
-  after=$({ find "$tmp/vault/idea" -type f 2>/dev/null || true; } | wc -l)
+  after=$({ find "$tmp/vault/Topics" -type f 2>/dev/null || true; } | wc -l)
   [ "$before" = "$after" ] || { echo "FAIL: bad field left an orphan note"; exit 1; }
 
   # append adds a timestamped bullet under ## Log (assert bullet + text + section,
