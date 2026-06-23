@@ -75,6 +75,8 @@ second-brain feed through `vault` + `second_brain`, and the gates read `gates.st
 
 ## Enable the second brain
 
+**Claude runs the setup for you.** Invoke the [second-brain](skills/obsidian/second-brain/SKILL.md) skill — or just ask to capture or recall something — and the agent executes the steps below through `vault.sh`. Only steps 1–2 (choosing the vault and switching it on) are a human decision the agent cannot make for you; from there the agent owns init, capture, and retrieval. The raw commands shown are what runs under the hood, or for direct CLI use.
+
 1. Set `vault.path` to your Obsidian vault and `vault.enabled = true` (above). The path is absolute; the folder need not exist yet.
 2. Confirm: `skill-config path` prints the path (exit 0). A silent exit 1 means the feed is still off.
 3. Initialize the vault. The [second-brain](skills/obsidian/second-brain/SKILL.md) skill writes through `scripts/vault.sh`, which resolves the vault path from `skill-config` on its own — no manual `export VAULT` needed. An explicit `export VAULT=/some/path` still overrides the config for a one-off vault.
