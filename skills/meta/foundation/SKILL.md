@@ -17,6 +17,10 @@ Climb until a rung holds, then stop:
 
 Push as much work down the ladder as the task allows. The model is the last resort, not the first rung.
 
+## Determinism is token-efficiency
+
+Pushing work down the ladder also cuts tokens, and the two goals never conflict. A script deletes output the model would otherwise generate token by token — the whole artifact, every run — and hands back a verdict the agent reads in one line. So the agent branches on the exit code and reads the artifact back only when the script failed. Success is quiet by design: a tool prints one line or nothing, because verbose stdout the agent re-reads spends the tokens the script just saved. The model is authored into the tool once, then run for free forever.
+
 ## Non-negotiable rules
 
 `skill-lint` enforces every rule below. The patterns live in `tools/skill_lint/rules.yaml` — the single source of truth — and the reasoning is in [references/ambiguity-rules.md](references/ambiguity-rules.md).

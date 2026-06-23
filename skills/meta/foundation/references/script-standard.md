@@ -34,6 +34,10 @@ compiler.
 9. **Tested.** A script ships with a test that fails if the logic breaks. Run via
    `make test`. No test, not done.
 
+10. **Quiet on success.** A successful run prints one line or nothing; reserve verbose
+    output for failure. Stdout the agent reads back costs tokens — the saving the script
+    exists to create — so a chatty success path defeats the script's own purpose.
+
 ## Skeleton
 
 ```python
