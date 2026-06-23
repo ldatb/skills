@@ -6,7 +6,7 @@ cleverness — and the depth bar for assessing a relationship follows the tech-l
 standard in [the review lenses](../../../engineering/code-review/references/review-lenses.md):
 judge the relationship against what it must deliver, not only against the last
 pleasant call. The retention mechanics here are the client-relationship cousin of
-[the retention playbook](../../../marketing/churn-prevention/references/retention-playbook.md):
+[the retention playbook](../../../marketing/growth/references/retention.md):
 that reference works product-level SaaS churn signals, while this one works the
 one-to-one consulting relationship a founder owns by hand.
 

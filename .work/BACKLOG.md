@@ -63,7 +63,38 @@ Legend: `[x]` done & lint-green · `[~]` in progress · `[ ]` todo · `[!]` bloc
 - [ ] Round 2 (optional): re-run critics; expect few/none given round 1 + deterministic gates.
 
 ## Remaining polish
-- [ ] README/CONTRIBUTING: reflect full library (62 skills, 11 categories) + "install ldatb skills" flow.
+- [x] README reflects full library + "install ldatb skills" flow.
+
+# ============ REFACTOR (round 2, 2026-06-22) — user consolidation pass ============
+Decisions: marketing→4 (copywriting/content/growth/outreach). Config: ~/.config/skills/skills.toml
+(global) + per-project ./skills.toml (NO "ldatb" prefix). Second-brain feed: OPT-OUT default,
+present on EVERY skill, graceful if no vault configured, agent decides relevance + ASKS when unsure,
+deterministic (script + manual). Per-skill docs: generated README.md per skill (a skill-readme tool).
+
+## R-merges (settle the skill set)
+- [x] remove caveman-review
+- [ ] marketing 13→4: copywriting(+copy-editing+marketing-psychology) · content(+ad-creative+social-content+social-media-viral) · growth(+marketing-ideas+revops+churn-prevention) · outreach(cold-email+sales-enablement+public-relations). Remove social/ category.
+- [ ] design 5→1 `frontend-design` (Swiss editorial + brutalism, ref misostack.com) + absorb site-architecture; brandkit stays.
+- [ ] obsidian 3→1 `second-brain` (obsidian-vault + ralph-vault + second-brain-crud; keep scripts; add retrieval).
+- [ ] `agent-loop` ← ralph + app-completion-loop (checkpointed + autonomous; subagent-driven-development composes).
+- [ ] secure-sdlc ← absorb supply-chain-audit.
+- [ ] rename docs-sync → `documentation`; rename simple → `brainstorm`.
+- [ ] remove standalone least-code → imbue subtraction ladder into foundation (also imbue full-output-enforcement + verification-before-completion as inherited principles; keep those two standalone).
+
+## R-behavior
+- [ ] autoguardrails: auto (triggers + pre-commit/CI runs check-policy.sh every commit).
+- [ ] documentation: auto on code change (triggers + PostToolUse hook runs skill-docs).
+- [ ] git-guardrails: always (triggers on every git op).
+
+## R-content
+- [ ] AWS/Azure/GCP: each follows its cloud philosophy (AWS managed-first/Well-Architected; Azure WAF; GCP Arch Framework).
+- [ ] software-architecture: + cloud architecture + diagrams (C4/Mermaid) + output ADR/design docs.
+- [ ] NEW soc-siem skill: Wazuh + Grafana + Suricata; monitor cloud + VMs.
+
+## R-systems (cross-cutting; after merges settle)
+- [ ] config: tools/skillkit config loader reading ~/.config/skills/skills.toml + ./skills.toml; install.sh seeds default; review EVERY skill for config values.
+- [ ] second-brain feed: opt-out "record" step on every skill (graceful no-vault; agent decides + asks; deterministic).
+- [ ] per-skill README: skill-readme generator + a README.md in every skill folder.
 
 ## Notes
 - Every SKILL.md must pass `skill-lint --strict`; every cross-link must resolve (`skill-docs`).
