@@ -2,7 +2,7 @@
 
 **Deterministic Claude skills, built to a manufacturing standard.**
 
-[![ci](https://github.com/ldatb/skills/actions/workflows/ci.yml/badge.svg)](https://github.com/ldatb/skills/actions/workflows/ci.yml)
+[![ci](https://github.com/lucas-ataides/skills/actions/workflows/ci.yml/badge.svg)](https://github.com/lucas-ataides/skills/actions/workflows/ci.yml)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 A skill exists to wring **determinism** out of a stochastic system: the agent takes
@@ -36,15 +36,15 @@ applied to agent skills. The full doctrine lives in
 1. the CLIs the skills call (skill-lint, skill-new, skill-gate, skill-changelog, skill-docs, skill-update, skill-config, skill-readme)
 
   ```bash
-  git clone https://github.com/ldatb/skills.git && cd skills
+  git clone https://github.com/lucas-ataides/skills.git && cd skills
   ./scripts/install.sh                       # uv tool install from the clone; re-run to update
   ```
 
 2. the skills, as a Claude Code plugin
 
   ```bash
-  /plugin marketplace add ldatb/skills
-  /plugin install ldatb-skills@ldatb-skills
+  /plugin marketplace add lucas-ataides/skills
+  /plugin install lucas-ataides-skills@lucas-ataides-skills
   ```
 
 `skill-update` reports when a newer tagged release exists.
@@ -120,7 +120,7 @@ skill cannot be created by hand (**Poka-yoke** at authoring time).
 ## Repository layout
 
 ```bash
-skills/                 # 45 skills, by domain (each with a generated README.md)
+skills/                 # 46 skills, by domain (each with a generated README.md)
   meta/                 # foundation, creating-skills, setup, cavecrew
   engineering/          # appsec, tdd, code-review, engineering (app+infra+qa),
                         # software-architecture, git-guardrails, autoguardrails, agent-loop,
@@ -132,7 +132,7 @@ skills/                 # 45 skills, by domain (each with a generated README.md)
   cloud/                # aws-toolkit, azure-toolkit, gcp-toolkit, cloud-best-practices, soc-siem
   obsidian/             # second-brain (capture · compile · retrieve · maintain)
   management/           # project-management, client-satisfaction, employee-management
-  productivity/         # brainstorm, caveman, grill-me, handoff, teach
+  productivity/         # brainstorm, caveman, grill-me, handoff, linear, teach
 tools/                  # the deterministic toolchain (Python): skill_lint, skill_new, skill_gate,
                         # skill_changelog, skill_docs, skill_update, skill_config, skill_readme, skillkit
 scripts/                # install.sh
@@ -142,7 +142,7 @@ scripts/                # install.sh
 
 ## Categories
 
-45 skills across 10 domains, every one lint-gated and carrying a generated README.md. The taxonomy grows as skills land — no empty folders.
+46 skills across 10 domains, every one lint-gated and carrying a generated README.md. The taxonomy grows as skills land — no empty folders.
 
 | Domain | What lives here |
 | ------ | --------------- |
@@ -155,7 +155,7 @@ scripts/                # install.sh
 | `cloud` | AWS / Azure / GCP toolkits (each to its own framework), cloud-best-practices (SOC2), soc-siem (Wazuh/Suricata/Grafana) |
 | `obsidian` | second-brain: source-backed vault compiler + fast CRUD + retrieval |
 | `management` | Project management, client satisfaction, people management |
-| `productivity` | brainstorm, caveman, grill-me, handoff, teach |
+| `productivity` | brainstorm, caveman, grill-me, handoff, linear, teach |
 
 ## Authoring a skill
 

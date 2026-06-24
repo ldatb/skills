@@ -9,7 +9,7 @@ from skillkit import atomic_write
 from skillkit.config import get, global_config_path, load_config, vault
 
 DEFAULT_TOML = """\
-# ldatb skills configuration.
+# lucas-ataides skills configuration.
 # Global: ~/.config/skills/skills.toml    Per-project: ./skills.toml (overrides global).
 
 [vault]

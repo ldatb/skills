@@ -11,8 +11,8 @@ from importlib.metadata import PackageNotFoundError, version
 
 from skill_update.core import is_newer
 
-REPO = "ldatb/skills"
-PACKAGE = "ldatb-skills-tools"
+REPO = "lucas-ataides/skills"
+PACKAGE = "lucas-ataides-skills-tools"
 
 
 def installed_version() -> str | None:

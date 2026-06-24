@@ -495,7 +495,7 @@ wheels = [
 ]
 
 [[package]]
-name = "ldatb-skills-tools"
+name = "lucas-ataides-skills-tools"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

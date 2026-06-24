@@ -1,4 +1,4 @@
-# Configuring ldatb skills
+# Configuring lucas-ataides skills
 
 Everything configurable lives in one layered TOML file, read by every tool and skill
 through `skillkit.config`. This guide is the practical path to set it up locally.

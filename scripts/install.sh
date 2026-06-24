@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install the ldatb/skills toolchain (skill-lint, skill-gate, ...) onto PATH.
+# Install the lucas-ataides/skills toolchain (skill-lint, skill-gate, ...) onto PATH.
 # Idempotent: re-run to update after `git pull`. Requires uv.
 set -euo pipefail
 

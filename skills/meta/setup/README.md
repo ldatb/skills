@@ -1,12 +1,12 @@
 # setup
 
-> Install or update the ldatb skills and their toolchain. Use when the user says "install ldatb skills", wants to set up or update the skills, or install the CLIs.
+> Install or update the lucas-ataides skills and their toolchain. Use when the user says "install lucas-ataides skills", wants to set up or update the skills, or install the CLIs.
 
 **Model-invoked** — the agent runs it automatically when your request matches the triggers below. You can also invoke it by name.
 
 ## When to use
 
-- says "install ldatb skills"
+- says "install lucas-ataides skills"
 - wants to set up
 - update the skills
 - install the CLIs

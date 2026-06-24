@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ldatb-skills-tools"
+name = "lucas-ataides-skills-tools"
 version = "0.1.0"
-description = "Deterministic toolchain for the ldatb/skills repository: skill-lint and skill-new."
+description = "Deterministic toolchain for the lucas-ataides/skills repository: skill-lint and skill-new."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
